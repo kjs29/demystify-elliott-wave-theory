@@ -1,0 +1,4 @@
+# ignore all files with csv extensions
+*.csv
+# ignore direction named 'hypothesis_test'
+hypothesis_test/
