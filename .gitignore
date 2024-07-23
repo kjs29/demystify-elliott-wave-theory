@@ -2,3 +2,7 @@
 *.csv
 # ignore direction named 'hypothesis_test'
 hypothesis_test/
+# ignore __pycache__
+__pycache__
+#ignore all files with jpg extensions
+*.jpg
