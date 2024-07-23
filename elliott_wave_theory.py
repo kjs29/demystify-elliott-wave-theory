@@ -40,7 +40,7 @@ def convert_UNIX_to_datetime(df):
     return df
 
 def extract_local_lows_highs(row, low_only=False, high_only=False, index=False):
-    # Extract local lows
+    # Extract local lows and local highs to number types
     if low_only:
         local_lows = row['local_lows'].split(';')
         if index:
@@ -51,17 +51,20 @@ def extract_local_lows_highs(row, low_only=False, high_only=False, index=False):
     # Extract local highs
     if high_only:
         local_highs = row['local_highs'].split(';')
-        return [float(high) for high in local_highs]
+        if index:
+            return [int(high.split(',')[0]) for high in local_highs]
+        else:
+            return [float(high.split(',')[1]) for high in local_highs]
 
     # Extract both local lows and local highs
     local_lows = row['local_lows'].split(';')
+    local_highs = row['local_highs'].split(';')
     if index:
         local_lows = [int(low.split(',')[0]) for low in local_lows]
+        local_highs = [int(high.split(',')[0]) for high in local_highs]
     else:
         local_lows = [float(low.split(',')[1]) for low in local_lows]
-
-    local_highs = row['local_highs'].split(';')
-    local_highs = [float(high) for high in local_highs]
+        local_highs = [float(high.split(',')[1]) for high in local_highs]
 
     return local_lows, local_highs
 
@@ -173,8 +176,9 @@ def add_local_highs(df):
                 cur_index, cur_price = local_lows[j].split(',')
                 
                 # find highest high 
-                highest_high = df.loc[int(prev_index)+1:int(cur_index)-1, 'high'].max()
-                high_values.append(str(highest_high))
+                highest_high_index = df.loc[int(prev_index)+1:int(cur_index)-1, 'high'].idxmax()
+                highest_high_price = df.loc[int(prev_index)+1:int(cur_index)-1, 'high'].max()
+                high_values.append(f"{highest_high_index}, {highest_high_price}")
             local_highs[i] = '; '.join(high_values)
     df['local_highs'] = local_highs
 
