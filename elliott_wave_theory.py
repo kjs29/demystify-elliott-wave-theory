@@ -1,3 +1,4 @@
+import os
 import random
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -386,6 +387,7 @@ def run(filename, folder='hypothesis_test'):
 filename = "btc_historical.csv"
 folder = "hypothesis_test"
 
-if __name__ == "__main__": 
-    # run(filename, folder)
+if __name__ == "__main__":
+    # os.makedirs(folder, exist_ok=True)    # Comment out when running from analyze.py
+    # run(filename, folder)                 # Comment out when running from analyze.py
     pass
