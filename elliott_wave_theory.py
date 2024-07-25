@@ -284,21 +284,21 @@ def save_unique_waves_df(df, filename, save_df= False, retracement_ratio=0.618):
 
 def save_stock_chart(df, filename):
     plt.figure(figsize=(14, 9))
-    plt.plot(df['date'], df['high'], label='High', color='green')
-    plt.plot(df['date'], df['close'], label='Close', color='blue')
-    plt.plot(df['date'], df['low'], label='Low', color='red')
+    plt.plot(df['date'], df['high'], label='High', color='green', alpha=0.3)
+    # plt.plot(df['date'], df['close'], label='Close', color='blue')
+    plt.plot(df['date'], df['low'], label='Low', color='red', alpha=0.3)
 
-    # Highlight local lows
-    local_low_indices = []
-    local_low_values = []
-    for lows in df['local_lows']:
-        for low in lows.split(';'):
-            if low:
-                index, value = low.split(',')
-                local_low_indices.append(int(index))
-                local_low_values.append(float(value))
+    # Highlight detected waves
+    waves = save_unique_waves_df(df, "NA")
+    markers = ['o', 's', 'd', "*"]
+    for i in range(len(waves)):
+        wave = waves[i]
+        # wave = wave[:-1] # For clarity, not showing 5th point can sometimes make it better.
+        x_coords = [point[0] for point in wave]
+        y_coords = [point[1] for point in wave]
+        marker_index = i % len(markers)
+        plt.plot(df['date'].iloc[x_coords], y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5)
 
-    plt.scatter(df['date'].iloc[local_low_indices], local_low_values, color='orange', label='Local Lows')
     plt.xlabel('Date')
     plt.ylabel('Price')
     plt.title('Stock Prices: High, Close, Low')
