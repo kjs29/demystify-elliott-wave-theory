@@ -1,6 +1,7 @@
+import random
 import pandas as pd
 import matplotlib.pyplot as plt
-import random
+import mplfinance as mpf
 from scipy.signal import find_peaks
 
 
@@ -283,30 +284,30 @@ def save_unique_waves_df(df, filename, save_df= False, retracement_ratio=0.618):
     return wave_data
 
 def save_stock_chart(df, filename):
-    plt.figure(figsize=(14, 9))
-    plt.plot(df['date'], df['high'], label='High', color='green', alpha=0.3)
-    # plt.plot(df['date'], df['close'], label='Close', color='blue')
-    plt.plot(df['date'], df['low'], label='Low', color='red', alpha=0.3)
+    # Prepare the data for mplfinance
+    candlestick_chart_df = df[['date', 'open', 'high', 'low', 'close', 'Volume']].copy()
+    candlestick_chart_df['Date'] = pd.to_datetime(candlestick_chart_df['date'])
+    candlestick_chart_df = candlestick_chart_df.set_index('Date', inplace=False)
+    candlestick_chart_df = candlestick_chart_df[['open', 'high', 'low', 'close']]  # Ensure the columns are in the correct order
+    
+    # Create a candlestick chart -> save picture, dataset(axes)
+    picture, dataset = mpf.plot(candlestick_chart_df, type='candle', style='charles', title='Stock Prices', ylabel='Price', volume=False, savefig=filename, returnfig=True)
 
     # Highlight detected waves
     waves = save_unique_waves_df(df, "NA")
     markers = ['o', 's', 'd', "*"]
-    for i in range(len(waves)):
-        wave = waves[i]
-        # wave = wave[:-1] # For clarity, not showing 5th point can sometimes make it better.
+    for i, wave in enumerate(waves):
         x_coords = [point[0] for point in wave]
         y_coords = [point[1] for point in wave]
         marker_index = i % len(markers)
-        plt.plot(df['date'].iloc[x_coords], y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5)
-
-    plt.xlabel('Date')
-    plt.ylabel('Price')
-    plt.title('Stock Prices: High, Close, Low')
-    plt.legend()
-    plt.grid(True)
-    # plt.show()
-    plt.savefig(filename)
-    plt.close()
+        # plt.plot(df['date'].iloc[x_coords], y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5)   # comment out when using mpf. This line plots waves with plt.
+        
+        # dataset[0] = candlestick chart data(axes)
+        # Plotting waves data on top of candlestick chart axes (dataset[0])
+        dataset[0].plot(x_coords, y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5)
+    
+    picture.savefig(filename)
+    plt.close(picture)
 
 def block_sampling(filename, number_of_splits=10):
     # Block Sampling
