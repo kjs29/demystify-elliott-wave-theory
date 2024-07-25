@@ -4,5 +4,7 @@
 hypothesis_test/
 # ignore __pycache__
 __pycache__
-#ignore all files with jpg extensions
+# ignore all files with jpg extensions
 *.jpg
+# ignore .DS_Store files
+.DS_Store

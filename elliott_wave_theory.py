@@ -230,10 +230,10 @@ def check_second_wave_end_within_fib_range(df, retracement_ratio=0.618):
     
     return df
 
-def save_unique_waves_df(df, filename, retracement_ratio=0.618):
+def save_unique_waves_df(df, filename, save_df= False, retracement_ratio=0.618):
     # Save unique wave data to a CSV file.
     unique_lows = {}
-    wave12345_detected = [] # [date = str(df.iloc[local_lows_index[j]]['date']) + '; ' + str(df.iloc[local_lows_index[j+1]]['date']) + '; ' + str(df.iloc[local_lows_index[j+2]]['date'])]
+    wave_data = []
     for i, row in df.iterrows():
         detected = row['wave_detected']
         if detected == 1:   # requires at least two local lows
@@ -242,7 +242,8 @@ def save_unique_waves_df(df, filename, retracement_ratio=0.618):
                 
                 local_lows_index = extract_local_lows_highs(row, True, False, True)
                 local_lows_price = extract_local_lows_highs(row, True, False, False)
-                local_highs = extract_local_lows_highs(row, False, True)
+                local_highs_index = extract_local_lows_highs(row, False, True, True)
+                local_highs_price = extract_local_lows_highs(row, False, True, False)
                 within_fib_range = row[f'second_wave_end_within_fib_range_{1 -  retracement_ratio}'].split(';')
                 within_fib_range = list(map(lambda x: x.strip().lower() == 'true', within_fib_range))    # Convert string 'True' to boolean True
 
@@ -252,15 +253,22 @@ def save_unique_waves_df(df, filename, retracement_ratio=0.618):
                         each_lows = str(local_lows_price[j]) + "; " + str(local_lows_price[j+1]) + "; " + str(local_lows_price[j+2])
                         if each_lows not in unique_lows:
                             date = str(df.iloc[local_lows_index[j]]['date']) + '; ' + str(df.iloc[local_lows_index[j+1]]['date']) + '; ' + str(df.iloc[local_lows_index[j+2]]['date'])
-                            wave1_max = local_highs[j]
-                            wave3_max = local_highs[j+1]
-                            diff = float(wave3_max - wave1_max)
-                            unique_lows[each_lows] = [date, wave1_max, wave3_max, diff]
-
+                            low1_index, low1_price = local_lows_index[j], local_lows_price[j]
+                            low2_index, low2_price = local_lows_index[j+1], local_lows_price[j+1]
+                            low3_index, low3_price = local_lows_index[j+2], local_lows_price[j+2]
+                            high1_index, high1_price = local_highs_index[j], local_highs_price[j]
+                            high2_index, high2_price = local_highs_index[j+1], local_highs_price[j+1]
+                            diff = float(high2_price - high1_price)
+                            unique_lows[each_lows] = [date, high1_price, high2_price, diff]
+                            wave_data.append(([low1_index, low1_price],[high1_index, high1_price],[low2_index, low2_price],[high2_index, high2_price],[low3_index, low3_price]))
+    
     # Convert the dictionary to a DataFrame
     result_df = pd.DataFrame.from_dict(unique_lows, orient='index', columns=['dates', 'wave1_max', 'wave3_max', 'wave3_max - wave1_max'])
     
-    save_to_csv(result_df, filename, False)
+    if save_df:
+        save_to_csv(result_df, filename, False)
+    
+    return wave_data
 
 def save_stock_chart(df, filename):
     plt.figure(figsize=(14, 9))
@@ -356,7 +364,7 @@ def run(filename, folder='hypothesis_test'):
     df = add_fib_levels(df, 0.618)
     df = check_second_wave_end_within_fib_range(df, 0.618)
     base_name = filename.split(".")[0]
-    save_unique_waves_df(df, f"{folder}/{base_name}_result.csv", retracement_ratio=0.618)
+    save_unique_waves_df(df, f"{folder}/{base_name}_result.csv", save_df=True, retracement_ratio=0.618)
     save_to_csv(df, f"{folder}/{base_name}_processed.csv", True)
     save_stock_chart(df,f"{folder}/{base_name}_chart.jpg")
 
