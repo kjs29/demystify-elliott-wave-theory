@@ -20,6 +20,11 @@ def add_columns(df, arr, column_name, default_value=0, active_value=1):
 
     return df
 
+def shift_column(df, column, number_of_shifts=1):
+    df[column] = df[column].shift(number_of_shifts)
+    
+    return df
+
 def convert_UNIX_to_datetime(df):
 
     if 'date' in df.columns:
@@ -234,6 +239,13 @@ def save_unique_waves_df(df, filename, save_df= False, retracement_ratio=0.618):
     # Save unique wave data to a CSV file.
     unique_lows = {}
     wave_data = []
+    # wave_data format: [   
+    #                       low1_index, low1_price],
+    #                       [high1_index, high1_price],
+    #                       [low2_index, low2_price],
+    #                       [high2_index, high2_price],
+    #                       [low3_index, low3_price]
+    # ]
     for i, row in df.iterrows():
         detected = row['wave_detected']
         if detected == 1:   # requires at least two local lows
@@ -357,6 +369,7 @@ def run(filename, folder='hypothesis_test'):
     df = add_tail_range(df)
     local_low = find_local_minima(df)
     add_columns(df, local_low, "local_minima", 0, 1)
+    df = shift_column(df, "local_minima") # should come before applying 'add_local_lows'
     df = add_local_lows(df, reset_threshold=5)
     df = convert_local_lows_to_dates(df)
     df = detect_waves(df)
