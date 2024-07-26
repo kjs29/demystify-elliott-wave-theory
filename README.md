@@ -73,21 +73,21 @@ One of the critical claims of this theory is that within an uptrend, the third w
 
 **Amplitude of Waves**
 
-- $\text{Amplitude}_{wave1}$: $high1 - low1$
-- $\text{Amplitude}_{wave2}$: $high1 - low2$
-- $\text{Amplitude}_{wave3}$: $high2 - low2$
+- $Amplitude_{wave1}$: $high1 - low1$
+- $Amplitude_{wave2}$: $high1 - low2$
+- $Amplitude_{wave3}$: $high2 - low2$
 
 ### Null Hypothesis:
 
-There is no significant upward movement ($\text{Amplitude}_{wave3}$) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. $\text{Amplitude}_{wave3}$ is not greater than $\text{Amplitude}_{wave2}$, implying that $high2$ does not exceed $high1$.
+There is no significant upward movement ($Amplitude_{wave3}$) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. $Amplitude_{wave3}$ is not greater than $Amplitude_{wave2}$, implying that $high2$ does not exceed $high1$.
 
-$H_{0}: (high2 - low2) \leq (high1 - low2)$ $\text{ }$ or $\text{ }$ $\text{Amplitude}_{wave3} \leq \text{Amplitude}_{wave2}$ $\text{ }$  or $\text{ }$ $high2 \leq high1$ $\text{ }$
+$H_{0}: (high2 - low2) \leq (high1 - low2)$ $\text{ }$ or $\text{ }$ $Amplitude_{wave3}$ $\leq$ $Amplitude_{wave2}$ $\text{ }$  or $\text{ }$ $high2 \leq high1$ $\text{ }$
 
 ### Alternative Hypothesis: 
 
-There is a significant upward movement ($\text{Amplitude}_{wave3}$) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. $\text{Amplitude}_{wave3}$ is greater than $\text{Amplitude}_{wave2}$, implying that $high2$ exceeds $high1$.
+There is a significant upward movement ($Amplitude_{wave3}$) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. $Amplitude_{wave3}$ is greater than $Amplitude_{wave2}$, implying that $high2$ exceeds $high1$.
 
-$H_{A}: (high2 - low2) > (high1 - low2)$ $\text{ }$ or $\text{ }$ $\text{Amplitude}_{wave3} > \text{Amplitude}_{wave2}$ $\text{ }$  or $\text{ }$ $high2 > high1$ $\text{ }$
+$H_{A}: (high2 - low2) > (high1 - low2)$ $\text{ }$ or $\text{ }$ $Amplitude_{wave3} > Amplitude_{wave2}$ $\text{ }$  or $\text{ }$ $high2 > high1$ $\text{ }$
 
 To clarify the retracement percentages, if the first wave starts at 0 and reaches a maximum of 100, the second wave retraces to a level between 38.2 (100 - 61.8) and 0.1 (100 - 99.9) when retracement ratio is 0.618.
 
