@@ -46,8 +46,8 @@ def convert_UNIX_to_datetime(df):
 
     return df
 
-def extract_local_lows_highs(row, low_only=False, high_only=False, index=False):
-    # Extract local lows and local highs to number types
+def extract_each_row_local_lows_highs(row, low_only=False, high_only=False, index=False):
+    # Extract local lows from each row and local highs to number types
     if low_only:
         local_lows = row['local_lows'].split(';')
         if index:
@@ -74,6 +74,22 @@ def extract_local_lows_highs(row, low_only=False, high_only=False, index=False):
         local_highs = [float(high.split(',')[1]) for high in local_highs]
 
     return local_lows, local_highs
+
+def extract_all_local_lows(df):
+    # Extract all local lows from the DataFrame, return a list [[index, price], [index, price], ...]
+    local_lows = []
+    seen_indices = set()
+    for i, row in df.iterrows():
+        lows = row['local_lows']
+        for low in lows.split(';'):
+            if low:
+                index, value = low.split(',')
+                index = int(index)
+                value = float(value)
+                if index not in seen_indices:
+                    local_lows.append([index, value])
+                    seen_indices.add(index)
+    return local_lows
 
 def add_green_red(df):
     green_red = []
@@ -150,7 +166,7 @@ def convert_local_lows_to_dates(df):
     for i, row in df.iterrows():
         local_lows = row['local_lows']
         if local_lows:
-            local_lows_index = extract_local_lows_highs(row, True, False, True)
+            local_lows_index = extract_each_row_local_lows_highs(row, True, False, True)
             dates = []
             for each_index in local_lows_index:
                 dates.append(str(df.loc[each_index, 'date']))
@@ -197,12 +213,12 @@ def add_fib_levels(df, retracement_ratio=0.618):
     for i, row in df.iterrows():
         detected = row['wave_detected']
         if detected == 1:   # requires at least two local lows
-            local_lows, local_highs = extract_local_lows_highs(row)
+            local_lows, local_highs = extract_each_row_local_lows_highs(row)
             fib_level_values = []
             for j in range(len(local_highs)):
-                wave1_max = local_highs[j]
-                wave1_start = local_lows[j]
-                wave3_start  = local_lows[j+1]
+                wave1_max = float(local_highs[j])
+                wave1_start = float(local_lows[j])
+                wave3_start = float(local_lows[j+1])
                 fib_level = wave1_max - (wave1_max - wave1_start) * retracement_ratio
                 fib_level_values.append(f"{fib_level:.4f}")
             fib_levels[i] = '; '.join(map(str, fib_level_values))
@@ -218,7 +234,7 @@ def check_second_wave_end_within_fib_range(df, retracement_ratio=0.618):
     for i, row in df.iterrows():
         detected = row['wave_detected']
         if detected == 1:   # requires at least two local lows
-            local_lows = extract_local_lows_highs(row, True)
+            local_lows = extract_each_row_local_lows_highs(row, True)
             if len(local_lows) > 2:
                 fib_levels = row[f'fib_levels_{1 - retracement_ratio}'].split(';') # ['6835.201435', '7238.915215']
                 fib_levels = list(map(float, fib_levels))
@@ -241,23 +257,16 @@ def save_unique_waves_df(df, retracement_ratio, filename, save_df= False):
     # Save unique wave data to a CSV file.
     unique_lows = {}
     wave_data = []
-    # wave_data format: [   
-    #                       low1_index, low1_price],
-    #                       [high1_index, high1_price],
-    #                       [low2_index, low2_price],
-    #                       [high2_index, high2_price],
-    #                       [low3_index, low3_price]
-    # ]
     for i, row in df.iterrows():
         detected = row['wave_detected']
         if detected == 1:   # requires at least two local lows
             local_lows = row['local_lows'].split(';')   # ['11, 6522.48', '13, 6850.5425', '18, 7156.88']
             if len(local_lows) > 2:
                 
-                local_lows_index = extract_local_lows_highs(row, True, False, True)
-                local_lows_price = extract_local_lows_highs(row, True, False, False)
-                local_highs_index = extract_local_lows_highs(row, False, True, True)
-                local_highs_price = extract_local_lows_highs(row, False, True, False)
+                local_lows_index = extract_each_row_local_lows_highs(row, True, False, True)
+                local_lows_price = extract_each_row_local_lows_highs(row, True, False, False)
+                local_highs_index = extract_each_row_local_lows_highs(row, False, True, True)
+                local_highs_price = extract_each_row_local_lows_highs(row, False, True, False)
                 within_fib_range = row[f'second_wave_end_within_fib_range_{1 -  retracement_ratio}'].split(';')
                 within_fib_range = list(map(lambda x: x.strip().lower() == 'true', within_fib_range))    # Convert string 'True' to boolean True
 
@@ -275,7 +284,6 @@ def save_unique_waves_df(df, retracement_ratio, filename, save_df= False):
                             diff = float(high2_price - high1_price)
                             unique_lows[each_lows] = [date, high1_price, high2_price, diff]
                             wave_data.append(([low1_index, low1_price],[high1_index, high1_price],[low2_index, low2_price],[high2_index, high2_price],[low3_index, low3_price]))
-    
     # Convert the dictionary to a DataFrame
     result_df = pd.DataFrame.from_dict(unique_lows, orient='index', columns=['dates', 'wave1_max', 'wave3_max', 'wave3_max - wave1_max'])
     
@@ -290,12 +298,12 @@ def save_stock_chart(df, retracement_ratio, filename):
     candlestick_chart_df['Date'] = pd.to_datetime(candlestick_chart_df['date'])
     candlestick_chart_df = candlestick_chart_df.set_index('Date', inplace=False)
     candlestick_chart_df = candlestick_chart_df[['open', 'high', 'low', 'close']]  # Ensure the columns are in the correct order
-    
-    # Create a candlestick chart. Setting returnfig as True saves (picture, dataset(axes))
+
+    # Create a candlestick chart -> save picture, dataset(axes)
     picture, dataset = mpf.plot(candlestick_chart_df, type='candle', style='charles', title='Stock Prices', ylabel='Price', volume=False, returnfig=True)
 
     # Highlight detected waves
-    waves = save_unique_waves_df(df,retracement_ratio, "NA")
+    waves = save_unique_waves_df(df, retracement_ratio, "NA")
     markers = ['o', 's', 'd', "*"]
     for i, wave in enumerate(waves):
         x_coords = [point[0] for point in wave]
@@ -306,10 +314,11 @@ def save_stock_chart(df, retracement_ratio, filename):
         # Plotting waves data on top of candlestick chart axes (dataset[0])
         dataset[0].plot(x_coords, y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5) # dataset[0] = candlestick chart data(axes)
 
-    plt.show()
+    # plt.show()
     picture.savefig(filename)
+    plt.close()
 
-def block_sampling(filename, number_of_splits=10):
+def block_sampling(filename, number_of_splits=30):
     # Block Sampling
 
     def split_dataframe(df, number_of_splits):
@@ -349,10 +358,11 @@ def block_sampling(filename, number_of_splits=10):
     
     green_ratios = sorted(green_ratios.values(), key=lambda x:x[1])
     
-    # Stratified Sampling
-    red = green_ratios[:2]
-    green = random.sample(green_ratios[-3:], 2)
-    sideways = random.sample(green_ratios[3:-3], 5)
+    # Stratified Random Sampling with equal ratio of each market condition
+    divisor = len(green_ratios) // 3
+    red = random.sample(green_ratios[:divisor], divisor//2)
+    green = random.sample(green_ratios[-divisor:], divisor//2)
+    sideways = random.sample(green_ratios[divisor:-divisor], divisor//2)
 
     print("Sampling is finished, process these samples.")
     print(f"Red: {red}")
@@ -362,7 +372,7 @@ def block_sampling(filename, number_of_splits=10):
     
     return filenumbers
 
-def run(filename, retracement_ratio=0.618, reset_threshold=5, folder='hypothesis_test'):
+def run(filename, retracement_ratio=0.618, reset_threshold=100000, folder='hypothesis_test'):
     # Run a file, and save the results at folder/ location.
     df = load_file(filename)
     df = convert_UNIX_to_datetime(df)
@@ -370,7 +380,7 @@ def run(filename, retracement_ratio=0.618, reset_threshold=5, folder='hypothesis
     df = add_tail_range(df)
     local_low = find_local_minima(df)
     add_columns(df, local_low, "local_minima", 0, 1)
-    df = shift_column(df, "local_minima") # should come before applying 'add_local_lows'
+    df = shift_column(df, "local_minima")
     df = add_local_lows(df, reset_threshold)
     df = convert_local_lows_to_dates(df)
     df = detect_waves(df)
@@ -378,15 +388,14 @@ def run(filename, retracement_ratio=0.618, reset_threshold=5, folder='hypothesis
     df = add_fib_levels(df, retracement_ratio)
     df = check_second_wave_end_within_fib_range(df, retracement_ratio)
     base_name = filename.split(".")[0]
-    save_unique_waves_df(df, retracement_ratio, f"{folder}/{base_name}_result.csv", save_df=True)
+    save_unique_waves_df(df, retracement_ratio, f"{folder}/{base_name}_result.csv", True)
     save_to_csv(df, f"{folder}/{base_name}_processed.csv", True)
     save_stock_chart(df, retracement_ratio, f"{folder}/{base_name}_chart.jpg")
 
 
-filename = "btc_historical.csv"
-folder = "hypothesis_test"
-
-if __name__ == "__main__":
-    # os.makedirs(folder, exist_ok=True)    # Comment out when running from analyze.py
-    # run(filename, retracement_ratio=0.618, reset_threshold=100000, folder)                 # Comment out when running from analyze.py
+if __name__ == "__main__": 
+    filename = "btc_historical.csv"
+    folder = "hypothesis_test"
+    os.makedirs(folder, exist_ok=True)
+    run(filename, retracement_ratio=0.618, reset_threshold=100000, folder=folder)
     pass
