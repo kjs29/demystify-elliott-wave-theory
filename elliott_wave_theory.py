@@ -237,7 +237,7 @@ def check_second_wave_end_within_fib_range(df, retracement_ratio=0.618):
     
     return df
 
-def save_unique_waves_df(df, filename, save_df= False, retracement_ratio=0.618):
+def save_unique_waves_df(df, retracement_ratio, filename, save_df= False):
     # Save unique wave data to a CSV file.
     unique_lows = {}
     wave_data = []
@@ -284,18 +284,18 @@ def save_unique_waves_df(df, filename, save_df= False, retracement_ratio=0.618):
     
     return wave_data
 
-def save_stock_chart(df, filename):
+def save_stock_chart(df, retracement_ratio, filename):
     # Prepare the data for mplfinance
     candlestick_chart_df = df[['date', 'open', 'high', 'low', 'close', 'Volume']].copy()
     candlestick_chart_df['Date'] = pd.to_datetime(candlestick_chart_df['date'])
     candlestick_chart_df = candlestick_chart_df.set_index('Date', inplace=False)
     candlestick_chart_df = candlestick_chart_df[['open', 'high', 'low', 'close']]  # Ensure the columns are in the correct order
     
-    # Create a candlestick chart -> save picture, dataset(axes)
-    picture, dataset = mpf.plot(candlestick_chart_df, type='candle', style='charles', title='Stock Prices', ylabel='Price', volume=False, savefig=filename, returnfig=True)
+    # Create a candlestick chart. Setting returnfig as True saves (picture, dataset(axes))
+    picture, dataset = mpf.plot(candlestick_chart_df, type='candle', style='charles', title='Stock Prices', ylabel='Price', volume=False, returnfig=True)
 
     # Highlight detected waves
-    waves = save_unique_waves_df(df, "NA")
+    waves = save_unique_waves_df(df,retracement_ratio, "NA")
     markers = ['o', 's', 'd', "*"]
     for i, wave in enumerate(waves):
         x_coords = [point[0] for point in wave]
@@ -303,12 +303,11 @@ def save_stock_chart(df, filename):
         marker_index = i % len(markers)
         # plt.plot(df['date'].iloc[x_coords], y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5)   # comment out when using mpf. This line plots waves with plt.
         
-        # dataset[0] = candlestick chart data(axes)
         # Plotting waves data on top of candlestick chart axes (dataset[0])
-        dataset[0].plot(x_coords, y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5)
-    
+        dataset[0].plot(x_coords, y_coords, marker=markers[marker_index], linestyle='-', alpha=0.5) # dataset[0] = candlestick chart data(axes)
+
+    plt.show()
     picture.savefig(filename)
-    plt.close(picture)
 
 def block_sampling(filename, number_of_splits=10):
     # Block Sampling
@@ -363,7 +362,7 @@ def block_sampling(filename, number_of_splits=10):
     
     return filenumbers
 
-def run(filename, folder='hypothesis_test'):
+def run(filename, retracement_ratio=0.618, reset_threshold=5, folder='hypothesis_test'):
     # Run a file, and save the results at folder/ location.
     df = load_file(filename)
     df = convert_UNIX_to_datetime(df)
@@ -372,16 +371,16 @@ def run(filename, folder='hypothesis_test'):
     local_low = find_local_minima(df)
     add_columns(df, local_low, "local_minima", 0, 1)
     df = shift_column(df, "local_minima") # should come before applying 'add_local_lows'
-    df = add_local_lows(df, reset_threshold=5)
+    df = add_local_lows(df, reset_threshold)
     df = convert_local_lows_to_dates(df)
     df = detect_waves(df)
     df = add_local_highs(df)
-    df = add_fib_levels(df, 0.618)
-    df = check_second_wave_end_within_fib_range(df, 0.618)
+    df = add_fib_levels(df, retracement_ratio)
+    df = check_second_wave_end_within_fib_range(df, retracement_ratio)
     base_name = filename.split(".")[0]
-    save_unique_waves_df(df, f"{folder}/{base_name}_result.csv", save_df=True, retracement_ratio=0.618)
+    save_unique_waves_df(df, retracement_ratio, f"{folder}/{base_name}_result.csv", save_df=True)
     save_to_csv(df, f"{folder}/{base_name}_processed.csv", True)
-    save_stock_chart(df,f"{folder}/{base_name}_chart.jpg")
+    save_stock_chart(df, retracement_ratio, f"{folder}/{base_name}_chart.jpg")
 
 
 filename = "btc_historical.csv"
@@ -389,5 +388,5 @@ folder = "hypothesis_test"
 
 if __name__ == "__main__":
     # os.makedirs(folder, exist_ok=True)    # Comment out when running from analyze.py
-    # run(filename, folder)                 # Comment out when running from analyze.py
+    # run(filename, retracement_ratio=0.618, reset_threshold=100000, folder)                 # Comment out when running from analyze.py
     pass
