@@ -1,4 +1,5 @@
 # Demystify-elliott-wave-theory
+
 A Statistical Analysis of Elliott Wave Theory
 
 # Introduction
@@ -16,13 +17,14 @@ Motive wave refers to a price movement toward the main trend. Corrective wave re
 ### Types of waves in Elliott Wave Theory
 
 - Motive (Main trend)
-    - Impulse
-    - Diagonal
+
+  - Impulse
+  - Diagonal
 
 - Corrective (Correction)
-    - Flat
-    - Zig-zag
-    - Triangle
+  - Flat
+  - Zig-zag
+  - Triangle
 
 <img src="https://github.com/user-attachments/assets/37bb78a4-a4c0-49e5-99dd-39232c97e428" alt="image" width="400" height="400"/>
 
@@ -30,8 +32,7 @@ Motive wave refers to a price movement toward the main trend. Corrective wave re
 
 The images above represent two types of motive waves.
 
-
-There are a few rules and several guidelines in Elliott Wave Theory, and some books claim slightly different variations of them. One of the rules says that wave 2 never retraces more than 100% of wave 1. Another rule says that wave 3 can never be the shortest of three impulse waves. 
+There are a few rules and several guidelines in Elliott Wave Theory, and some books claim slightly different variations of them. One of the rules says that wave 2 never retraces more than 100% of wave 1. Another rule says that wave 3 can never be the shortest of three impulse waves.
 
 There are many guidelines in Elliott Wave Theory. Some of them include ratio analysis. Elliott Wave Theory specifies that a correction retraces a Fibonacci percentage of the preceding wave. Sharp corrections tend more often to retrace 61.8% or 50% of the previous wave, particularly when they occur as wave 2 of an impulse. (Prechter & Frost, 2017)
 
@@ -39,7 +40,7 @@ There are many guidelines in Elliott Wave Theory. Some of them include ratio ana
 
 <img src="https://github.com/user-attachments/assets/283e9775-cd16-4bc3-8245-0d5b63a0da8b" alt="image" width="600" height="300"/>
 
-*Image source: Elliott Wave Principle*
+_Image source: Elliott Wave Principle_
 
 # Purpose
 
@@ -61,27 +62,44 @@ One of the critical claims of this theory is that within an uptrend, the third w
 
 <img src="https://github.com/user-attachments/assets/96540d0d-ec90-4ce8-91a9-ca71ab15315a" alt="image" width="600" height="400"/>
 
-**Null Hypothesis**: There is no significant upward movement (uptrend motive wave) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. The third wave does not exceed the high of the first wave. Formally, the maximum value of the third wave is less than or equal to the maximum value of the first wave.
+### I will use these terms in the hypotheses set up:
 
-$H_{0}: max(\text{wave 3}) \leq max(\text{wave 1})$
+**Price points**
 
-**Alternative Hypothesis**: There is a significant upward movement (uptrend motive wave) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. The third wave exceeds the high of the first wave. Formally, the maximum value of the third wave is greater than the maximum value of the first wave.
+- $low1$: Starting price of wave 1
+- $high1$: Highest price of wave 1 (ending price of wave 1)
+- $low2$: Starting price of wave 2 (ending price of wave 2)
+- $high2$: Highest price of wave 3 (ending price of wave 3)
 
-$H_{A}: max(\text{wave 3}) > max(\text{wave 1})$
+**Amplitude of Waves**
 
-To clarify, if the first wave starts at 0 and reaches a maximum of 100, the second wave retraces to a level between 38.2 (100 - 61.8) and 0.1 (100 - 99.9).
+- $\text{Amplitude}_{wave1}$: $high1 - low1$
+- $\text{Amplitude}_{wave2}$: $high1 - low2$
+- $\text{Amplitude}_{wave3}$: $high2 - low2$
+
+### Null Hypothesis:
+
+There is no significant upward movement ($\text{Amplitude}_{wave3}$) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. $\text{Amplitude}_{wave3}$ is not greater than $\text{Amplitude}_{wave2}$, implying that $high2$ does not exceed $high1$.
+
+$H_{0}: (high2 - low2) \leq (high1 - low2)$ $\text{ }$ or $\text{ }$ $\text{Amplitude}_{wave3} \leq \text{Amplitude}_{wave2}$ $\text{ }$  or $\text{ }$ $high2 \leq high1$ $\text{ }$
+
+### Alternative Hypothesis: 
+
+There is a significant upward movement ($\text{Amplitude}_{wave3}$) after an uptrend motive wave and its subsequent corrective wave which retraces to a level between 61.8% and 99.9% of the first wave. $\text{Amplitude}_{wave3}$ is greater than $\text{Amplitude}_{wave2}$, implying that $high2$ exceeds $high1$.
+
+$H_{A}: (high2 - low2) > (high1 - low2)$ $\text{ }$ or $\text{ }$ $\text{Amplitude}_{wave3} > \text{Amplitude}_{wave2}$ $\text{ }$  or $\text{ }$ $high2 > high1$ $\text{ }$
+
+To clarify the retracement percentages, if the first wave starts at 0 and reaches a maximum of 100, the second wave retraces to a level between 38.2 (100 - 61.8) and 0.1 (100 - 99.9) when retracement ratio is 0.618.
 
 ## Data Collection
 
 - Bitcoin 1-hour historical data (BTCUSD: Bitcoin All Time History Index) from Tradingview.com
-    - Date range: (2022-01-01 00:00 - 2024-07-22 19:00 UTC) 22412 rows
+  - Date range: (2022-01-01 00:00 - 2024-07-22 19:00 UTC) 22412 rows
 - **Sampling Method**:
-    
-    To ensure an unbiased and representative analysis, a mixture of block sampling and stratified random sampling was adopted. 
-    
-    1. The entire data set is divided into 16 time blocks.
-    2. Calculate the number of rows with green candles versus the number of entire rows within each block. The segments are categorized into green, red, and sideways market conditions.
-    3. Using the random Python module, the samples are drawn from each category to ensure a balanced representation of different market conditions.
+  To ensure an unbiased and representative analysis, a mixture of block sampling and stratified random sampling was adopted.
+  1. The entire data set is divided into 16 time blocks.
+  2. Calculate the number of rows with green candles versus the number of entire rows within each block. The segments are categorized into green, red, and sideways market conditions.
+  3. Using the random Python module, the samples are drawn from each category to ensure a balanced representation of different market conditions.
 
 ## Data Preparation and Analysis
 
@@ -107,11 +125,8 @@ The data preparation and analysis process is implemented using Python and involv
 
 - **Updating Local Low:** The local low is updated whenever a new local minimum is lower than the current local low. Existing local lows that are higher than the new price are removed, ensuring that the oldest local lows are the lowest, and as time progresses, the newer local lows tend to be higher.
 - **Resetting Threshold:** The resetting threshold feature ensures that the algorithm does not get stuck on local minima that are no longer relevant as new, significantly lower minima are found. This helps in dynamically adjusting the list of local lows to reflect more meaningful and current price movements. Simply, the higher threshold is, the wider range of timeline you are allowing it to test.
-    
-    - *Example*
-        
-        If local_lows = [10, 90, 85], and we encounter a new local low of 70, two of the previous local lows (85 and 90) are removed because 70 < 85, and 70 < 90, respectively. If the resetting threshold is 1 or 2, the original local_lows gets cleared and 70 is added, so the list becomes [70]. If local_lows = [10, 90, 85] and the resetting threshold is 3, local_lows becomes [10, 70].
-        
+  - _Example_
+    If local_lows = [10, 90, 85], and we encounter a new local low of 70, two of the previous local lows (85 and 90) are removed because 70 < 85, and 70 < 90, respectively. If the resetting threshold is 1 or 2, the original local_lows gets cleared and 70 is added, so the list becomes [70]. If local_lows = [10, 90, 85] and the resetting threshold is 3, local_lows becomes [10, 70].
 
 ### Detecting Waves
 
@@ -140,23 +155,20 @@ The data preparation and analysis process is implemented using Python and involv
 The paired sample t-test is particularly suitable for this analysis as it allows for the comparison of the means of two related groups. Specifically, this test is used to compare the highest values of the first and third waves within the same market condition. By employing this method, we can determine if there is a statistically significant difference between these two means.
 
 Conditions for sample t-test:
+
 - Independence: Sample observations must be independent. Since each sample observation is the difference between two related groups, each individual pair must be independent of another pair. In time series data, whether one pair's difference influences the neighboring pair's difference is questionable, however, during the data collection I ensured independence by using block sampling and performing stratified random sampling methods.
 
 - Normality: If the sample size is at least 30 and there are no particularly extreme outliers, then we typically assume the sampling distribution is nearly normal. The sampling distribution histogram is illustrated in the result section below, and it follows a normal curve.
 
 Sample Mean of Difference: <img src="https://github.com/user-attachments/assets/05f4aace-7317-4346-8572-1c840d1c4a6e" alt="image" width="300" height="70" style="inline"/>
 
-
 Sample Standard Deviation: <img src="https://github.com/user-attachments/assets/f14e6707-73e6-4a0d-b961-a8275697751f" alt="image" width="200" height="70" style="inline"/>
 
 Sample Standard Error: <img src="https://github.com/user-attachments/assets/5a901673-1bc7-485a-beef-8b60e47e6c4a" alt="image" width="150" height="70" style="inline"/>
 
-
 T-Statistic: <img src="https://github.com/user-attachments/assets/52d41e24-845f-45b6-a9c8-322ac057f079" alt="image" width="160" height="70" style="inline"/>
 
-
 Degrees of Freedom: <img src="https://github.com/user-attachments/assets/c15a9fa4-4248-40f4-9cff-ac65323771ba" alt="image" width="140" height="70" style="inline"/>
-
 
 # Result
 
@@ -167,18 +179,23 @@ Degrees of Freedom: <img src="https://github.com/user-attachments/assets/c15a9fa
 ## Sample Market Conditions
 
 ### Red [3,1]
+
 <img src="https://github.com/user-attachments/assets/626e5d34-6f73-4dd7-b693-79986a4a54d4" alt="image" width="400" height="300"/>
 <img src="https://github.com/user-attachments/assets/cbdf6eae-133e-4c9a-9767-7f77d21809c1" alt="image" width="400" height="300"/>
 
 ### Green [14,7]
+
 <img src="https://github.com/user-attachments/assets/26269a95-e179-4675-9e60-e098c72fac3a" alt="image" width="400" height="300"/>
 <img src="https://github.com/user-attachments/assets/50af9679-fc75-4849-8a62-a1a8f68a0252" alt="image" width="400" height="300"/>
 
-
 ### Sideways
+
 ### [1, 6]
+
 ### [4, 13]
+
 ### [10]
+
 <img src="https://github.com/user-attachments/assets/2f566a06-d2f7-4dcb-b5ff-bdbb0a517a95" alt="image" width="400" height="300"/>
 <img src="https://github.com/user-attachments/assets/c76efc61-beb8-42c1-85a4-6bbc1cb44006" alt="image" width="400" height="300"/>
 <img src="https://github.com/user-attachments/assets/dd5624d5-e65e-4b05-af37-acc795eb1cae" alt="image" width="400" height="300"/>
@@ -189,16 +206,15 @@ Degrees of Freedom: <img src="https://github.com/user-attachments/assets/c15a9fa
 
 <img src="https://github.com/user-attachments/assets/84fede69-7cd4-43f4-ba41-cc90ad0d6f2f" alt="image" width="500" height="300"/>
 
-
 # Sample Data
 
-*Red*: `[[3, 0.4743], [9, 0.4907]] # [index, green candle ratio]`
+_Red_: `[[3, 0.4743], [9, 0.4907]] # [index, green candle ratio]`
 
-*Green*: `[[14, 0.5243], [7, 0.52]]`
+_Green_: `[[14, 0.5243], [7, 0.52]]`
 
-*Sideways*: `[[1, 0.5071], [6, 0.5007], [4, 0.5043], [13, 0.5021], [10, 0.5]]`
+_Sideways_: `[[1, 0.5071], [6, 0.5007], [4, 0.5043], [13, 0.5021], [10, 0.5]]`
 
-*Samples to run*: `[3, 9, 14, 7, 1, 6, 4, 13, 10]`
+_Samples to run_: `[3, 9, 14, 7, 1, 6, 4, 13, 10]`
 
 Number of samples: 750
 
@@ -224,13 +240,12 @@ The journey of creating this project - encompassing the study of Elliott Wave Th
 
 <a name="detecting_waves">1.</a>
 
-In detecting waves 1 and 2, two local lows, in hindsight, suffice the condition. However, because a local low from the way it was set up requires subsequent higher points, this approach inherently involves a look-ahead bias since we cannot rely on future information to make current decisions. For example, when Wave 2 is in progress, it is uncertain whether the price will decline further or reverse. Despite this limitation, the method remains valuable for hypothesis testing as it provides an opportunity to validate or refute specific market behavior ($H_{A}$). Establishing clear entry and exit strategies based on historical and currently available data is necessary. One example might be an entry strategy in a lower time frame after a new local minimum is found within the Fibonacci retracement range of the first wave to avoid look-ahead bias. 
+In detecting waves 1 and 2, two local lows, in hindsight, suffice the condition. However, because a local low from the way it was set up requires subsequent higher points, this approach inherently involves a look-ahead bias since we cannot rely on future information to make current decisions. For example, when Wave 2 is in progress, it is uncertain whether the price will decline further or reverse. Despite this limitation, the method remains valuable for hypothesis testing as it provides an opportunity to validate or refute specific market behavior ($H_{A}$). Establishing clear entry and exit strategies based on historical and currently available data is necessary. One example might be an entry strategy in a lower time frame after a new local minimum is found within the Fibonacci retracement range of the first wave to avoid look-ahead bias.
 
 In hypothesis testing, the assumptions I make should be aligned with the specific patterns or behaviors I am investigating. If my goal is to determine whether the second motive wave's high value (wave 3) exceeds the first motive wave's high value (wave 1), then my assumptions should reflect the conditions under which I believe this pattern occurs. For example, comparing two uptrend motive waves in the context of Elliott Wave Theory requires three increasing local low values. One interesting point I would like to share is that I feel I gained more knowledge through the statistical research process than when I was reading books about Elliott Wave Theory. Research often helps confirm whether we truly understand what we think we know.
 
 ## References
 
-Prechter, R., & Frost, A. J. (2017). *Elliott Wave Principle: Key to Market Behavior* (11th ed.). New Classics Library.
+Prechter, R., & Frost, A. J. (2017). _Elliott Wave Principle: Key to Market Behavior_ (11th ed.). New Classics Library.
 
-Neely, G. (1990). *Mastering Elliott Wave* (2.0) [E-book]. Windsor Books. (Original work published 1988)
-
+Neely, G. (1990). _Mastering Elliott Wave_ (2.0) [E-book]. Windsor Books. (Original work published 1988)
