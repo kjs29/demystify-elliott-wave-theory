@@ -130,28 +130,85 @@ The data preparation and analysis process is implemented using Python and involv
 
 - **Updating Local Low:** The local low is updated whenever a new local minimum is lower than the current local low. Existing local lows that are higher than the new price are removed, ensuring that the oldest local lows are the lowest, and as time progresses, the newer local lows tend to be higher.
 - **Resetting Threshold:** The resetting threshold feature ensures that the algorithm does not get stuck on local minima that are no longer relevant as new, significantly lower minima are found. This helps in dynamically adjusting the list of local lows to reflect more meaningful and current price movements. Simply, the higher threshold is, the wider range of timeline you are allowing it to test.
-  - _Example_
-    If local_lows = [10, 90, 85], and we encounter a new local low of 70, two of the previous local lows (85 and 90) are removed because 70 < 85, and 70 < 90, respectively. If the resetting threshold is 1 or 2, the original local_lows gets cleared and 70 is added, so the list becomes [70]. If local_lows = [10, 90, 85] and the resetting threshold is 3, local_lows becomes [10, 70].
+
+  _Example_
+
+  If local_lows = [10, 90, 85], and we encounter a new local low of 70, two of the previous local lows (85 and 90) are removed because 70 < 85, and 70 < 90, respectively. If the resetting threshold is 1 or 2, the original local_lows gets cleared and 70 is added, so the list becomes [70]. If local_lows = [10, 90, 85] and the resetting threshold is 3, local_lows becomes [10, 70].
 
 ### Detecting Waves
 
-- **Wave Detection:** Waves 1 and 2 are detected if there are at least two local lows that increase in value in chronological order. [1](#detecting_waves)
+- **Wave Detection:** Wave 1 and 2 are detected if there are at least two local lows that increase in value in chronological order. These pairs are candidates to test since the hypothesis is testing at low 2 whether it will exceed previous high1. [1](#detecting_waves)
 
+- `store_unique_pairs_local_lows()` stores all the unique pairs of consecutive local lows in a dictionary where key is the pair of local lows, and the value is highest point between the local lows.
+
+  ```py
+  unique_pairs = store_unique_pairs_local_lows(df)
+  print(unique_pairs)
+  ```
+
+  ```
+  {
+      '4, 46638.43;7, 46959.19': [5, 47515.8],
+      '11, 46631.96;14, 46864.99': [13, 47196.88],
+      '14, 46864.99;20, 47295.19': [17, 47952.97],
+      '14, 46864.99;22, 47266.73': [17, 47952.97],
+      '11, 46631.96;28, 46781.88': [17, 47952.97],
+      '28, 46781.88;32, 46999.49': [31, 47305.53],
+      ...
+      '440, 41146.63;442, 41309.03': [441, 41684.71]
+  }
+  ```
 ### Finding Local Highs
 
-- **Local High Identification:** The highest high between consecutive local lows is identified.
+- **Finding Local Highs:** The highest high between consecutive local lows is identified. Used for finding high1.
 
-### Comparing Waves
+- **Searching high2:** Continuously update current maximum, and current minimum value. Starts searching for high2, given that there are low1, and low2.
 
-- **Wave Comparison:** For each detected wave, wave 1 and wave 3 maxima are compared, and the differences are calculated.
+  ```
+  Searching high2 Algorithm
 
-### Saving Unique Local Lows
+  Iterate through a dictionary that contains all pairs of (low1, low2),
+      Track current maximum, current minimum
+      Iterate DataFrame from the second low's index + 1,
+          # success case
+          If current maximum > high1,
+              If current low < Fibonacci level of (low2, current maximum),
+                  Add to success waves.
+                  Break out of inner loop.
+              Keep searching for high2.
 
-- **Handling Overlapping Segments:** When dealing with wave data in time series, there were many overlapping wave segments. To remove these overlapping segments, I recorded the unique local lows and saved them along with their corresponding dates in a CSV file.
+          # failure case
+          If current minimum < low1,
+              Add to failure waves.
+              Break out of inner loop.
+  ```
+      
+  
+  
+  
 
-### Plotting the Stock Chart
+### Calculating Fibonacci retracement levels
 
-- **Stock Chart Plotting:** The stock chart is plotted, highlighting local lows.
+- **Calculation:**
+
+  Fibonacci retracement level = high1 - (high1 - low1) * retracement_ratio
+
+  Fibonacci retracement range = (low1, Fibonacci retracement level)
+
+  Example
+  ```py
+  low1 = 100
+  high1 = 200
+  low2 = 130
+  retracement_ratio = 0.618
+  fib_level = 200 - (200 - 100) * 0.618 = 138.2
+  fib_range = (100, 138.2)
+  ```
+
+
+### Plotting the Chart
+
+- **Chart Plotting:** The chart is plotted with detected waves on candlestick chart. Waves where its high2 is greater than high1 are plotted with a solid line, and other waves are plotted with dotted-line. Different markers are used to visualize waves effectively. Modules used for charting are `mplfinance`, and `matplotlib.pyplot`.
 
 # Statistical Tests
 
