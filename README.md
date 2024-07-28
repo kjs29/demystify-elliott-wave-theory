@@ -250,14 +250,9 @@ Waves are detected based on the parameters used for this sample test.
 
 - If there is another trough between the troughs within a wave, they are not counted.
 
-  <img src="https://github.com/user-attachments/assets/457d6ee1-6be6-4525-80e0-60e22c9d6d9a" alt="image" width="300" height="200"/>
-
-  This image above displays only the counted waves. All the other combination of waves are not counted in the project.
+  <img src="https://github.com/user-attachments/assets/457d6ee1-6be6-4525-80e0-60e22c9d6d9a" alt="image" width="300" height="200"/>Counted(blue)<img src="https://github.com/user-attachments/assets/63904ae1-78ec-4e4f-a633-d0fbed22d3ac" alt="image" width="300" height="200"/>Not counted(red)
 
   I chose to count this way so that the project focuses more on clear and distinct wave patterns.
-  
-
-
   
 
 ### Samples from Red Blocks
