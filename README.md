@@ -95,10 +95,15 @@ To clarify the retracement percentages, if the first wave starts at 0 and reache
 
 - Bitcoin 1-hour historical data (BTCUSD: Bitcoin All Time History Index) from Tradingview.com
   - Date range: (2022-01-01 00:00 - 2024-07-22 19:00 UTC) 22412 rows
+
 - **Sampling Method**:
+
   To ensure an unbiased and representative analysis, a mixture of block sampling and stratified random sampling was adopted.
-  1. The entire data set is divided into 16 time blocks.
+
+  1. The entire data set is divided into 40 time blocks.
+  
   2. Calculate the number of rows with green candles versus the number of entire rows within each block. The segments are categorized into green, red, and sideways market conditions.
+  
   3. Using the random Python module, the samples are drawn from each category to ensure a balanced representation of different market conditions.
 
 ## Data Preparation and Analysis
@@ -172,69 +177,126 @@ Degrees of Freedom: <img src="https://github.com/user-attachments/assets/c15a9fa
 
 # Result
 
+## Samples data
+  
+The first elements refer to index, and the second elements represent green candle ratio (number of green candles / total number of candles within each block).
+
+  - Red Blocks: `[[39, 0.4857], [8, 0.4661], [11, 0.4964], [1, 0.4911], [14, 0.4911], [6, 0.4696]]`
+
+  - Green Blocks: `[[19, 0.5143], [27, 0.5125], [34, 0.5339], [29, 0.5411], [17, 0.5482], [4, 0.5321]]`
+
+  - Sideways Blocks: `[[21, 0.5018], [31, 0.5], [33, 0.5089], [32, 0.5018], [36, 0.5089], [16, 0.5071]]`
+
+Blocks to use for samples: `[39, 8, 11, 1, 14, 6, 19, 27, 34, 29, 17, 4, 21, 31, 33, 32, 36, 16]`
+
+Number of Samples: 1435
+
+Sample Standard Deviation: 796.9910486508581
+
+Sample Standard Error: 21.039116242975407
+
+Sample Mean: 24.34635540069686
+
+Degrees of Freedom: 1434
+
+t-statistic: 1.1571947756515526
+
+p-value: 0.12369275505181164
+
+Success Ratio: 0.5916376306620209
+
+p-value of 0.12369275505181164 is greater than the standard significance level of 0.05, so it fails to reject the null hypothesis.
+
+
+![image](https://github.com/user-attachments/assets/a75c5904-0bf8-4c37-9fb4-c19adede6741)
+
+## Parameters used
+
+```py
+number_of_splits=40
+
+retracement_ratio=0.618
+# Determines the price range for the potential low2 point.
+
+high2_retracement_ratio=0.382
+# Determines the price range for the potential low3 point.
+
+reset_threshold=100000
+# The higher reset_threshold is, the wider range it detects
+```
+
+# Visualization
+
 ## Sampling Distribution
 
-<img src="https://github.com/user-attachments/assets/ea9f2b78-1715-4d33-ba59-9f65e540c086" alt="image" width="600" height="400"/>
-
-## Sample Market Conditions
-
-### Red [3,1]
-
-<img src="https://github.com/user-attachments/assets/626e5d34-6f73-4dd7-b693-79986a4a54d4" alt="image" width="400" height="300"/>
-<img src="https://github.com/user-attachments/assets/cbdf6eae-133e-4c9a-9767-7f77d21809c1" alt="image" width="400" height="300"/>
-
-### Green [14,7]
-
-<img src="https://github.com/user-attachments/assets/26269a95-e179-4675-9e60-e098c72fac3a" alt="image" width="400" height="300"/>
-<img src="https://github.com/user-attachments/assets/50af9679-fc75-4849-8a62-a1a8f68a0252" alt="image" width="400" height="300"/>
-
-### Sideways
-
-### [1, 6]
-
-### [4, 13]
-
-### [10]
-
-<img src="https://github.com/user-attachments/assets/2f566a06-d2f7-4dcb-b5ff-bdbb0a517a95" alt="image" width="400" height="300"/>
-<img src="https://github.com/user-attachments/assets/c76efc61-beb8-42c1-85a4-6bbc1cb44006" alt="image" width="400" height="300"/>
-<img src="https://github.com/user-attachments/assets/dd5624d5-e65e-4b05-af37-acc795eb1cae" alt="image" width="400" height="300"/>
-<img src="https://github.com/user-attachments/assets/e4b32fc5-bcac-4046-a7b6-8adac01b425e" alt="image" width="400" height="300"/>
-<img src="https://github.com/user-attachments/assets/f6a0ced2-e4ae-4bab-9c25-0dd93f904a03" alt="image" width="400" height="300"/>
+<img src="https://github.com/user-attachments/assets/69091991-b1c3-48b8-a899-da225eb94373" alt="image" width="700" height="500"/>
 
 ## Boxplot
 
-<img src="https://github.com/user-attachments/assets/84fede69-7cd4-43f4-ba41-cc90ad0d6f2f" alt="image" width="500" height="300"/>
+<img src="https://github.com/user-attachments/assets/d740c40b-56c9-48a6-9d76-1dee4c055ef4" alt="image" width="700" height="500"/>
 
-# Sample Data
 
-_Red_: `[[3, 0.4743], [9, 0.4907]] # [index, green candle ratio]`
+## Chart
 
-_Green_: `[[14, 0.5243], [7, 0.52]]`
+For each wave, four points (low1, high1, low2, high2) are plotted since we don't need 5th or 6th point for the hypothesis.
 
-_Sideways_: `[[1, 0.5071], [6, 0.5007], [4, 0.5043], [13, 0.5021], [10, 0.5]]`
+If a wave's high2 point exceeds high1 point, it is drawn by line, otherwise dotted-line.
 
-_Samples to run_: `[3, 9, 14, 7, 1, 6, 4, 13, 10]`
+Waves are detected based on the parameters used for this sample test. 
 
-Number of samples: 750
+- If `retracement_ratio=0.618`, low2 would not be detected if wave2 retraced less than 0.618 of the wave1.
 
-Sample Standard Deviation: 766.9509743448738
+- If `high2_retracement_ratio=0.382`, wave3 will keep searching for the highest point until current candle retraces equal to or more than 0.382 of wave3.
 
-Sample Mean : 60.1894
+- If there is another trough between the troughs within a wave, they are not counted.
 
-Degrees of Freedom: 749
+  <img src="https://github.com/user-attachments/assets/457d6ee1-6be6-4525-80e0-60e22c9d6d9a" alt="image" width="300" height="200"/>
 
-**Test statistic (t)**: 2.1492321617926176
+  This image above displays only the counted waves. All the other combination of waves are not counted in the project.
 
-**P-value**: 0.01596788054432838
+  I chose to count this way so that the project focuses more on clear and distinct wave patterns.
+  
 
-P-value is less than the standard significance level $\alpha$ of 0.05. This indicates that there is sufficient evidence to reject the null hypothesis.
+
+  
+
+### Samples from Red Blocks
+<img src="https://github.com/user-attachments/assets/2008ebc2-d0cf-4477-a961-5b138b8c7d40" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/531cb94f-60ff-40b2-82c8-5b193a07748c" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/1ba0010f-5d28-4433-b7aa-bda9baa8338b" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/22955eff-b7bf-44b0-98f0-853abb8990ce" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/4aa2bfb5-4c29-4dc3-a2b6-46039bf76bc9" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/9e8e99aa-2ec6-4493-aff3-e16273063a5b" alt="image" width="700" height="500"/>
+
+### Samples from Green Blocks
+<img src="https://github.com/user-attachments/assets/752d431e-b7ce-467a-9248-8c32f7cc00d1" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/a1222f98-bc0c-4029-9be2-49df10aab0f8" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/56678f95-1f71-4d60-a6eb-6a1003f4be66" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/cefd874a-d62e-4731-88de-5a0e5575e568" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/ed345021-019f-4684-b8a6-14489503f5b3" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/a288541c-8a85-417f-a4c9-a9775a8beb5d" alt="image" width="700" height="500"/>
+
+### Samples from Sideways Blocks
+<img src="https://github.com/user-attachments/assets/c3cce8f5-514a-495d-b666-77450d4d07e9" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/894a4118-1c20-405a-b64c-27fe511822c5" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/b9d56e14-fa15-4ac2-b85c-d55707def2a0" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/e6d8f8c3-cee6-4b33-b9d8-ad7d92f46813" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/45af0006-8180-4439-b448-eee93c75896f" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/334ad606-bcb9-43ef-bfcd-136e4ef10d28" alt="image" width="700" height="500"/>
 
 # Conclusion & Discussions
 
-In conclusion, the statistical test conducted in this project provides strong statistical evidence against the null hypothesis. The rejection of the null hypothesis indicates that the data provides strong evidence that wave 3 consistently reaches higher prices than wave 1, after an uptrend and its subsequent corrective wave falling within a Fibonacci retracement range. It can also be interpreted as it is very unlikely that the observed differences where wave 3 exceeds wave 1 are due to random chance.
+The statistical test conducted in this project did not provide strong evidence to reject the null hypothesis. The p-value obtained from the paired sample t-test was 0.12369275505181164, which is greater than the standard significance level of 0.05. This result means that we fail to reject the null hypothesis, indicating that the data does not provide sufficient evidence to conclude that wave 3 consistently reaches higher prices than wave 1 after an uptrend and its subsequent corrective wave falling within a Fibonacci retracement range. It can be interpreted as that there is approximately 12% probability that the observed differences (where wave 3 exceeds wave 1) could be due to random chances, assuming the null hypothesis is true. This is not low enough to conclude that there is a significant pattern where wave 3 consistently exceeds wave 1. 
 
-As someone who is still building their statistical knowledge, I remain cautious and open to identifying any potential biases that may have influenced my research. Nonetheless, the result is genuinely exciting for me as an aspiring quantitative trader / researcher. While my heart wants to fully embrace these findings, I must moderate my enthusiasm with an analytical perspective.
+While there is no sufficient evidence of wave 3 exceeding wave 1, the analysis shows that the probability of wave 3 exceeding wave 1 is still higher than 50%. This suggests that there may be a practical implication in trading. The higher probability of wave 3 exceeding wave 1 indicates that there might be underlying tendency in the market that can be exploited for trading strategies.
+
+Further research could involve 
+
+- Exploring different timeframes, market conditions, and Fibonacci retracement levels to further investigate the observed patterns
+
+- Testing the hypothesis with different statistical inference methods or technologies such as machine learning
+
+As someone who is still building his statistical knowledge, I remain cautious and open to identifying any potential biases that may have influenced my research. Throughout the project, the p-value varied significantly with subtle adjustments. The process of getting closer to the truth is genuinely exicting to me as an aspiring quantitative trader / researcher, and each time I believed that I was taking steps toward gaining a deeper understanding of the phenomena.
 
 The journey of creating this project - encompassing the study of Elliott Wave Theory, statistical inference, hypothesis testing, and programming - has brought me immense satisfaction and joy. I would like to express my gratitude to Mr. Elliott.
 
