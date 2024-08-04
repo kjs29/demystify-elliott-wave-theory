@@ -434,19 +434,22 @@ def block_sampling(filename, number_of_splits=30):
         green_ratios[i] = [i, round(new_df_green_ratio, 4)]
         splitted_filename = f"{filename.split('.')[0]}_{i}_splitted.csv"
         save_to_csv(new_dfs[i-1], splitted_filename, False)
-    
+
     green_ratios = sorted(green_ratios.values(), key=lambda x:x[1])
     
     # Stratified Random Sampling
     divisor = len(green_ratios) // 3
-    red = random.sample(green_ratios[:divisor], divisor//2)
-    green = random.sample(green_ratios[-divisor:], divisor//2)
-    sideways = random.sample(green_ratios[divisor:-divisor], divisor//2)
+    red = random.sample(green_ratios[:divisor], max(1, divisor//2))
+    green = random.sample(green_ratios[-divisor:], max(1, divisor//2))
+    sideways = random.sample(green_ratios[divisor:-divisor], max(1, divisor//2))
 
-    print("Sampling is finished, process these samples.")
+    print(f"\nYou have requested to split your main file into {number_of_splits} blocks of files.")
+    print(f"\nStratified Sampling done. Each block is categorized by the number of green candles / number of candles within each block.")
+    print(f"\nTotal Blocks: {green_ratios}\n")
+    print(f"Random Sampling is completed. We will process the following blocks, and get aggregated results.")
     print(f"Red: {red}")
     print(f"Green: {green}")
-    print(f"Sideways: {sideways}")
+    print(f"Sideways: {sideways}\n")
     filenumbers = [x for x, y in red] + [x for x, y in green] + [x for x, y in sideways]
     
     return filenumbers
