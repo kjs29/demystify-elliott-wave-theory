@@ -340,46 +340,6 @@ def add_local_highs(df):
 
     return df
 
-def save_unique_waves_df(df, retracement_ratio, filename, save_df= False):
-    # Save unique wave data to a CSV file.
-    unique_lows = {}
-    wave_data = []
-    for i, row in df.iterrows():
-        detected = row['wave_detected']
-        if detected == 1:   # requires at least two local lows
-            local_lows = row['local_lows'].split(';')   # ['11, 6522.48', '13, 6850.5425', '18, 7156.88']
-            if len(local_lows) > 2:
-                
-                local_lows_index = extract_each_row_local_lows_highs(row, True, False, True)
-                local_lows_price = extract_each_row_local_lows_highs(row, True, False, False)
-                local_highs_index = extract_each_row_local_lows_highs(row, False, True, True)
-                local_highs_price = extract_each_row_local_lows_highs(row, False, True, False)
-                within_fib_range = row[f'second_wave_end_within_fib_range_{1 -  retracement_ratio}'].split(';')
-                within_fib_range = list(map(lambda x: x.strip().lower() == 'true', within_fib_range))    # Convert string 'True' to boolean True
-
-                for j in range(len(within_fib_range) - 2):
-                    each_fib_range = within_fib_range[j]
-                    if each_fib_range:
-                        each_lows = str(local_lows_price[j]) + "; " + str(local_lows_price[j+1]) + "; " + str(local_lows_price[j+2])
-                        if each_lows not in unique_lows:
-                            date = str(df.iloc[local_lows_index[j]]['date']) + '; ' + str(df.iloc[local_lows_index[j+1]]['date']) + '; ' + str(df.iloc[local_lows_index[j+2]]['date'])
-                            low1_index, low1_price = local_lows_index[j], local_lows_price[j]
-                            low2_index, low2_price = local_lows_index[j+1], local_lows_price[j+1]
-                            low3_index, low3_price = local_lows_index[j+2], local_lows_price[j+2]
-                            high1_index, high1_price = local_highs_index[j], local_highs_price[j]
-                            high2_index, high2_price = local_highs_index[j+1], local_highs_price[j+1]
-                            diff = float(high2_price - high1_price)
-                            unique_lows[each_lows] = [date, high1_price, high2_price, diff]
-                            wave_data.append(([low1_index, low1_price],[high1_index, high1_price],[low2_index, low2_price],[high2_index, high2_price],[low3_index, low3_price]))
-    # Convert the dictionary to a DataFrame
-    result_df = pd.DataFrame.from_dict(unique_lows, orient='index', columns=['dates', 'wave1_max', 'wave3_max', 'wave3_max - wave1_max'])
-    
-    if save_df:
-        save_to_csv(result_df, filename, False)
-    
-    return wave_data
-
-
 def save_chart(df, filename, success_waves, failure_waves, plot_success_waves=True, plot_failure_waves=False):
     # Prepare the data for mplfinance
     candlestick_chart_df = df[['date', 'open', 'high', 'low', 'close']].copy()
