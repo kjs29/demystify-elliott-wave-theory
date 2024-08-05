@@ -523,10 +523,10 @@ def run(filename, retracement_ratio=0.618, high2_retracement_ratio=0.382, reset_
     add_columns(df, local_low, "local_minima", 0, 1)
     df = add_local_lows(df, reset_threshold)
     df = convert_local_lows_to_dates(df)
-    df = detect_waves(df)
-    df = add_local_highs(df)
 
     # Waves Detection
+    df = detect_waves(df)
+    df = add_local_highs(df)
     waves = store_unique_pairs_local_lows(df)
     waves = store_unique_pairs_local_lows_within_fib_levels(waves, retracement_ratio)
     success_waves, failure_waves = search_high2(df, waves, high2_retracement_ratio, debugging=False)
