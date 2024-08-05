@@ -83,7 +83,7 @@ One of the critical claims of this theory is that within an uptrend, the third w
 
 <img src="https://github.com/user-attachments/assets/96540d0d-ec90-4ce8-91a9-ca71ab15315a" alt="image" width="600" height="400"/>
 
-### I will use these terms in the hypotheses set up:
+### Terms used in Hypotheses Setup
 
 **Price points**
 
@@ -461,6 +461,18 @@ Other further researches could involve
 As someone who is still building his statistical knowledge, I remain cautious and open to identifying any potential biases that may have influenced my research. Throughout the project, the p-value varied significantly with subtle adjustments. The process of getting closer to the truth is genuinely exciting to me as an aspiring quantitative trader / researcher, and each time I believed that I was taking steps toward gaining a deeper understanding of the phenomena.
 
 The journey of creating this project - encompassing the study of Elliott Wave Theory, statistical inference, hypothesis testing, and programming - has brought me immense satisfaction and joy. I would like to express my gratitude to Mr. Elliott.
+
+### My message to you
+
+If you have read up to here, I'd like to send huge thanks to you 🙇🏻‍♂️
+
+If you would like to give me your feedback, I would be very happy to get your insight.
+
+Also, if you want to work together, I would love to work together.
+
+You can easily reach me at my email, jsk.jinsung@gmail.com or linkedin at [www.linkedin.com/in/jinsungk](https://www.linkedin.com/in/jinsungk/).
+
+---
 
 <a name="detecting_waves">1.</a>
 
