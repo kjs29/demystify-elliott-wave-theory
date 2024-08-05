@@ -189,6 +189,26 @@ This algorithm ensures that it captures significant price movements after low2, 
   - After iterating through all pairs, print the count of success waves, failure waves, and uncounted waves.
   ```
 
+### Explanation On Why Searching From `low2_index + 2`
+
+- The wave detection algorithm identifies waves using pairs of two unique, increasing local low values.
+
+  When using local low values, it calls for the next candle to low price that is higher than the current local lows. 
+
+  Whether the next candle's low is higher than current candle's low or not cannot be determined until the next candle is completed. [2](#why_low2_plus_2)
+
+  For this reason, the algorithm begins searching from `low2_index + 2` to avoid look-ahead bias.
+
+  Often, there are candles at `low2_index + 1` for which high already exceeds high1. These outcomes are included in uncounted waves and excluded from the total observations.
+
+### Uncounted Waves
+
+Although there is sufficient evidence (the presence of two unique increasing local lows) to detect a new wave, some waves are still not counted towards the total observation under one of the following conditions.
+
+1. When the immediate candle after low2 exceeds high1.
+
+2. When the price remains within the range of (low1 and high1).
+
 ### Calculating Fibonacci retracement levels
 
 - **Calculation:**
@@ -197,20 +217,19 @@ This algorithm ensures that it captures significant price movements after low2, 
 
   Fibonacci retracement range = (low1, Fibonacci retracement level)
 
-  Example
   ```py
   low1 = 100
   high1 = 200
   low2 = 130
   retracement_ratio = 0.618
+  
   fib_level = 200 - (200 - 100) * 0.618 = 138.2
   fib_range = (100, 138.2)
   ```
 
 ### Trading Strategy 1
 
-
-Entry: Buy at the open price of the candle that is two candles after low2 (i.e., low2_index + 2).
+Entry: Buy at the open price of the candle that is two candles after low2.
 
 Exit:
 
@@ -251,60 +270,59 @@ Expected Value, in general, is the value that is most likely the result of the n
 
 The expected value (EV) helps determine if following a trading strategy will earn money in the long term. If the EV is positive, it suggests that the strategy is likely to be profitable over time. Conversely, a negative EV indicates potential long-term losses.
 
-To evaluate the profitability of this trading strategy, we use the discrete expected value formula. The discrete expected value formula is used to determine the long-term average outcome of a trading strategy based on the probabilities of different outcomes and their respective values.
-
 Expected Value: <img src="https://github.com/user-attachments/assets/e9ce69bd-5c49-4050-b8e2-db4919febb11" alt="image" width="200" height="70" style="inline"/>
 
 # Result
 
-## Samples data
-  
-The first elements refer to index, and the second elements represent correlation coefficient between the time and price.
+## Hypothesis Test Result
 
-  - Red: `[[37, -0.5441], [10, -0.301], [14, -0.8702], [36, -0.6594], [8, -0.5549], [21, -0.4307]]`
+- Blocks used for Samples: `[37, 10, 14, 36, 8, 21, 23, 18, 12, 16, 3, 11, 27, 38, 9, 40, 4, 15]`
 
-  - Sideways: `[[23, -0.2944], [18, 0.4168], [12, 0.1345], [16, 0.1812], [3, 0.0218], [11, -0.039]]`
+  The first elements refer to index, and the second elements represent correlation coefficient between the time and price within each block.
 
-  - Green: `[[27, 0.5306], [38, 0.6503], [9, 0.6352], [40, 0.5726], [4, 0.9428], [15, 0.7893]]`
+    - Red: `[[37, -0.5441], [10, -0.301], [14, -0.8702], [36, -0.6594], [8, -0.5549], [21, -0.4307]]`
 
-Blocks used for Samples: `[37, 10, 14, 36, 8, 21, 23, 18, 12, 16, 3, 11, 27, 38, 9, 40, 4, 15]`
+    - Sideways: `[[23, -0.2944], [18, 0.4168], [12, 0.1345], [16, 0.1812], [3, 0.0218], [11, -0.039]]`
 
-Number of Samples: 1173
+    - Green: `[[27, 0.5306], [38, 0.6503], [9, 0.6352], [40, 0.5726], [4, 0.9428], [15, 0.7893]]`
 
-Sample Standard Deviation: 1393.7234320939415
+- Number of Samples: 1173
 
-Sample Standard Error: 40.69373903394007
+- Sample Standard Deviation: 1393.7234320939415
 
-Sample Mean: 34.0213810741688
+- Sample Standard Error: 40.69373903394007
 
-Degrees of Freedom: 1172
+- Sample Mean: 34.0213810741688
 
-t-statistic: 0.8360347778756266
+- Degrees of Freedom: 1172
 
-p-value: 0.20165287546619798
+- t-statistic: 0.8360347778756266
 
-Success Ratio: 0.4356351236146633
+- p-value: 0.20165287546619798
 
-p-value of 0.20165287546619798 is greater than the standard significance level of 0.05, so it fails to reject the null hypothesis.
+- Success Ratio: 0.4356351236146633
 
-### Test Strategy 1 Result:
+p-value of 0.20165287546619798 is greater than the standard significance level of 0.05, so it fails to reject the null hypothesis. 
 
-Total # of Success Outcome: 511 / Total # of Failure Outcome: 662
+_More interpretation is in the conclusion & discussions section._
 
-P(Success): 0.4356351236146633
+## Strategy 1 Test Result
 
-P(Failure): 0.5643648763853367
+- Total # of Success Outcome: 511
 
-Average Success profit: 349.293170254403
+- Total # of Failure Outcome: 662
 
-Average Failure loss: -326.00871601208456
+- P(Success): 0.4356
 
-Overall Expected Value: -31.82349531116796
+- P(Failure): 0.5644
 
-## Screenshot
+- Average Success profit: 349.2932
 
-![image](https://github.com/user-attachments/assets/031917a6-235e-4449-8eb4-4adf528f0e8d)
+- Average Failure loss: -326.0087
 
+- Overall Expected Value: -31.8235
+
+Overall expected value is less than 0, so implementing strategy 1 loses money over time.
 
 ## Parameters used
 
@@ -335,11 +353,13 @@ reset_threshold=1000000
 
 ## Chart
 
-For each wave, four points (low1, high1, low2, high2) are plotted since we don't need 5th or 6th point for the hypothesis.
+For each wave, five points (low1, high1, low2, high2, threshold price) are plotted since 6th point is irrelevant.
 
-If a wave's high2 point exceeds high1 point, it is drawn by line, otherwise dotted-line.
+Threshold price refers to the price that falls below retracement price in success case, and current low price in failure case.
 
-Waves are detected based on the parameters used for this sample test. 
+If a wave's high2 point exceeds high1 point (success case), it is drawn by a solid line; otherwise a dotted-line.
+
+Waves are detected based on the parameters used.
 
 - If `retracement_ratio=0.618`, low2 would not be detected if wave2 retraced less than 0.618 of the wave1.
 
@@ -349,7 +369,25 @@ Waves are detected based on the parameters used for this sample test.
 
   <img src="https://github.com/user-attachments/assets/457d6ee1-6be6-4525-80e0-60e22c9d6d9a" alt="image" width="300" height="200"/>Counted(blue)<img src="https://github.com/user-attachments/assets/63904ae1-78ec-4e4f-a633-d0fbed22d3ac" alt="image" width="300" height="200"/>Not counted(red)
 
-  I chose to count this way so that the project focuses more on clear and distinct wave patterns.
+  ```
+  Above image has 5 troughs, 1,2,3,4, and 5.
+
+  At trough 4,
+  
+    local_lows = [1,2,3,4] # increasing order
+
+    The Wave Detection Algorithm identifies waves: [1,2], [2,3], and [3,4].
+
+    The Wave Detection Algorithm does not identify waves: [1,3], [1,4], [2,4].
+
+  At trough 5,
+
+    local_lows = [1,5] # since 5 is lower than 2, 3, 4
+
+    Identified waves: [1,2]
+  ```
+
+  Project focuses more on wave patterns identified by neighboring local lows. [3](#why_neighboring_lows)
   
 
 ### Samples from Red Blocks
@@ -376,6 +414,10 @@ Waves are detected based on the parameters used for this sample test.
 <img src="https://github.com/user-attachments/assets/45af0006-8180-4439-b448-eee93c75896f" alt="image" width="700" height="500"/>
 <img src="https://github.com/user-attachments/assets/334ad606-bcb9-43ef-bfcd-136e4ef10d28" alt="image" width="700" height="500"/>
 
+## Screenshot
+
+![image](https://github.com/user-attachments/assets/031917a6-235e-4449-8eb4-4adf528f0e8d)
+
 # Conclusion & Discussions
 
 The statistical test conducted in this project did not provide strong evidence to reject the null hypothesis. The p-value obtained from the paired sample t-test was 0.12369275505181164, which is greater than the standard significance level of 0.05. This result means that we fail to reject the null hypothesis, indicating that the data does not provide sufficient evidence to conclude that wave 3 consistently reaches higher prices than wave 1 after an uptrend and its subsequent corrective wave falling within a Fibonacci retracement range. It can be interpreted as that there is approximately 12% probability that the observed differences (where wave 3 exceeds wave 1) could be due to random chances, assuming the null hypothesis is true. This is not low enough to conclude that there is a significant pattern where wave 3 consistently exceeds wave 1. 
@@ -397,6 +439,17 @@ The journey of creating this project - encompassing the study of Elliott Wave Th
 In detecting waves 1 and 2, two local lows, in hindsight, suffice the condition. However, because a local low from the way it was set up requires subsequent higher points, this approach inherently involves a look-ahead bias since we cannot rely on future information to make current decisions. For example, when Wave 2 is in progress, it is uncertain whether the price will decline further or reverse. Despite this limitation, the method remains valuable for hypothesis testing as it provides an opportunity to validate or refute specific market behavior ($H_{A}$). Establishing clear entry and exit strategies based on historical and currently available data is necessary. One example might be an entry strategy in a lower time frame after a new local minimum is found within the Fibonacci retracement range of the first wave to avoid look-ahead bias.
 
 In hypothesis testing, the assumptions I make should be aligned with the specific patterns or behaviors I am investigating. If my goal is to determine whether the second motive wave's high value (wave 3) exceeds the first motive wave's high value (wave 1), then my assumptions should reflect the conditions under which I believe this pattern occurs. For example, comparing two uptrend motive waves in the context of Elliott Wave Theory requires three increasing local low values. One interesting point I would like to share is that I feel I gained more knowledge through the statistical research process than when I was reading books about Elliott Wave Theory. Research often helps confirm whether we truly understand what we think we know.
+
+<a name="why_low2_plus_2">2.</a>
+
+More research can be done regarding this such as, in a 5 minute timeframe chart, test the association between the current 1 hour timeframe candle's low and other 5 minute timeframe variables.
+
+If we were to investigate 1 hour candle's low's behavior, would the current candle's low occur more in the first 30 minutes or the second 30 minutes? Does the timing of formation of low associate with any particular variable? What are confounding factors in any seemingly meaningful observations?
+
+<a name="why_neighboring_lows">3.</a>
+
+The choice to capture waves identified by neighboring lows was based on the desire to accurately test motive waves in Elliott Waves Theory. According to the book, motive waves are formed by neighboring lows, rather than non-adjacent ones. Including non-adjacent lows in wave detection could lead to miscounting previous waves, thus deviating from the hypothesis (Does the subsequent wave after low 2 exceed the high of wave 1?). In the real world, however, more complexities are added, so it will be insightful to investigate all the possible waves. This can be achieved by considering combination, choosing 2 out of total number of local lows, since order does not matter and numbers are naturally sorted in any pairs of two.
+
 
 ## References
 
