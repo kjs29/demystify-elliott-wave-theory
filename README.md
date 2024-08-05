@@ -164,28 +164,30 @@ The data preparation and analysis process is implemented using Python and involv
 
 - **Searching high2:** Continuously update current maximum, and current minimum value. Starts searching for high2, given that there are low1, and low2.
 
+This algorithm ensures that it captures significant price movements after low2, identifies potential high2 points based on given conditions, and categorizes waves into success or failure based on their behavior relative to high1 and the Fibonacci retracement level.
   ```
-  Searching high2 Algorithm
+  Searching High2 Algorithm
 
-  Iterate through a dictionary that contains all pairs of (low1, low2),
-      Track current maximum, current minimum
-      Iterate DataFrame from the second low's index + 1,
-          # success case
-          If current maximum > high1,
-              If current low < Fibonacci level of (low2, current maximum),
-                  Add to success waves.
-                  Break out of inner loop.
-              Keep searching for high2.
+  - Iterate through a dictionary that contains all pairs of (low1, low2):
+  
+    - Track the current maximum (cur_max) and current minimum (cur_min).
+    - Iterate through the DataFrame starting from low2_index + 2 to avoid look-ahead bias:
+        # Success Case:
+        - If cur_max exceeds high1_price:
+          - If it is the last row, record the current high2 information and add it to success waves, then break.
+          - Otherwise, if cur_low is less than or equal to the Fibonacci retracement level of (low2_price, cur_max):
+            - Add to success waves with the current high2 information and break.
+          - If cur_max exceeds high1_price but the current row is not the last one and cur_low is greater than the Fibonacci level, continue to the next row.
 
-          # failure case
-          If current minimum < low1,
-              Add to failure waves.
-              Break out of inner loop.
+        # Failure Case:
+        - If cur_min is less than or equal to low1_price and high2_exceeded_high1_before is False:
+          - If the current row is low2_index + 2, set high2_price conservatively to the current open price, add it to failure waves, and break.
+          - Otherwise, find the maximum high between low2_index + 2 and the current row minus 1, set this as high2_price, add it to failure waves, and break.
+
+        - If neither success nor failure conditions are met, continue iterating through the DataFrame.
+
+  - After iterating through all pairs, print the count of success waves, failure waves, and uncounted waves.
   ```
-      
-  
-  
-  
 
 ### Calculating Fibonacci retracement levels
 
@@ -204,6 +206,17 @@ The data preparation and analysis process is implemented using Python and involv
   fib_level = 200 - (200 - 100) * 0.618 = 138.2
   fib_range = (100, 138.2)
   ```
+
+### Trading Strategy 1
+
+
+Entry: Buy at the open price of the candle that is two candles after low2 (i.e., low2_index + 2).
+
+Exit:
+
+  - Success: Sell at the retracement price.
+  
+  - Failure: Sell at low1 if high2 is less than or equal to high1.
 
 
 ### Plotting the Chart
@@ -232,53 +245,80 @@ T-Statistic: <img src="https://github.com/user-attachments/assets/52d41e24-845f-
 
 Degrees of Freedom: <img src="https://github.com/user-attachments/assets/c15a9fa4-4248-40f4-9cff-ac65323771ba" alt="image" width="140" height="70" style="inline"/>
 
+## Expected Value
+
+Expected Value, in general, is the value that is most likely the result of the next repeated trial of a statistical experiment.
+
+The expected value (EV) helps determine if following a trading strategy will earn money in the long term. If the EV is positive, it suggests that the strategy is likely to be profitable over time. Conversely, a negative EV indicates potential long-term losses.
+
+To evaluate the profitability of this trading strategy, we use the discrete expected value formula. The discrete expected value formula is used to determine the long-term average outcome of a trading strategy based on the probabilities of different outcomes and their respective values.
+
+Expected Value: <img src="https://github.com/user-attachments/assets/e9ce69bd-5c49-4050-b8e2-db4919febb11" alt="image" width="200" height="70" style="inline"/>
+
 # Result
 
 ## Samples data
   
-The first elements refer to index, and the second elements represent green candle ratio (number of green candles / total number of candles within each block).
+The first elements refer to index, and the second elements represent correlation coefficient between the time and price.
 
-  - Red Blocks: `[[39, 0.4857], [8, 0.4661], [11, 0.4964], [1, 0.4911], [14, 0.4911], [6, 0.4696]]`
+  - Red: `[[37, -0.5441], [10, -0.301], [14, -0.8702], [36, -0.6594], [8, -0.5549], [21, -0.4307]]`
 
-  - Green Blocks: `[[19, 0.5143], [27, 0.5125], [34, 0.5339], [29, 0.5411], [17, 0.5482], [4, 0.5321]]`
+  - Sideways: `[[23, -0.2944], [18, 0.4168], [12, 0.1345], [16, 0.1812], [3, 0.0218], [11, -0.039]]`
 
-  - Sideways Blocks: `[[21, 0.5018], [31, 0.5], [33, 0.5089], [32, 0.5018], [36, 0.5089], [16, 0.5071]]`
+  - Green: `[[27, 0.5306], [38, 0.6503], [9, 0.6352], [40, 0.5726], [4, 0.9428], [15, 0.7893]]`
 
-Blocks to use for samples: `[39, 8, 11, 1, 14, 6, 19, 27, 34, 29, 17, 4, 21, 31, 33, 32, 36, 16]`
+Blocks used for Samples: `[37, 10, 14, 36, 8, 21, 23, 18, 12, 16, 3, 11, 27, 38, 9, 40, 4, 15]`
 
-Number of Samples: 1435
+Number of Samples: 1173
 
-Sample Standard Deviation: 796.9910486508581
+Sample Standard Deviation: 1393.7234320939415
 
-Sample Standard Error: 21.039116242975407
+Sample Standard Error: 40.69373903394007
 
-Sample Mean: 24.34635540069686
+Sample Mean: 34.0213810741688
 
-Degrees of Freedom: 1434
+Degrees of Freedom: 1172
 
-t-statistic: 1.1571947756515526
+t-statistic: 0.8360347778756266
 
-p-value: 0.12369275505181164
+p-value: 0.20165287546619798
 
-Success Ratio: 0.5916376306620209
+Success Ratio: 0.4356351236146633
 
-p-value of 0.12369275505181164 is greater than the standard significance level of 0.05, so it fails to reject the null hypothesis.
+p-value of 0.20165287546619798 is greater than the standard significance level of 0.05, so it fails to reject the null hypothesis.
 
+### Test Strategy 1 Result:
 
-![image](https://github.com/user-attachments/assets/a75c5904-0bf8-4c37-9fb4-c19adede6741)
+Total # of Success Outcome: 511 / Total # of Failure Outcome: 662
+
+P(Success): 0.4356351236146633
+
+P(Failure): 0.5643648763853367
+
+Average Success profit: 349.293170254403
+
+Average Failure loss: -326.00871601208456
+
+Overall Expected Value: -31.82349531116796
+
+## Screenshot
+
+![image](https://github.com/user-attachments/assets/031917a6-235e-4449-8eb4-4adf528f0e8d)
+
 
 ## Parameters used
 
 ```py
 number_of_splits=40
+# Divide into 40 blocks
 
 retracement_ratio=0.618
 # Determines the price range for the potential low2 point.
 
-high2_retracement_ratio=0.382
+high2_retracement_ratio=0.618
 # Determines the price range for the potential low3 point.
 
-reset_threshold=100000
+reset_threshold=1000000
 # The higher reset_threshold is, the wider range it detects
 ```
 
@@ -286,11 +326,11 @@ reset_threshold=100000
 
 ## Sampling Distribution
 
-<img src="https://github.com/user-attachments/assets/69091991-b1c3-48b8-a899-da225eb94373" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/9c9fae5c-5941-4cd3-b682-95f3ad6072c8" alt="image" width="700" height="500"/>
 
 ## Boxplot
 
-<img src="https://github.com/user-attachments/assets/d740c40b-56c9-48a6-9d76-1dee4c055ef4" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/7233ca76-349f-46d4-9c2b-19094cb2f74d" alt="image" width="700" height="500"/>
 
 
 ## Chart
