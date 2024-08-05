@@ -234,12 +234,22 @@ def store_unique_pairs_local_lows_within_fib_levels(unique_pairs_local_lows, ret
 def search_high2(df, unique_pairs_local_lows_within_fib_levels, high2_retracement_ratio=0.382, debugging=False):
     # Takes a dictionary from 'store_unique_pairs_local_lows_within_fib_levels'
     # Search for high2 price for each pair of local lows
+    # 
+    # uncounted_waves includes two types waves: 
+    #   1. When immediate_candle_after_low2 (candle at low2_index + 1)'s high exceeds high 1
+    #   2. When neither of success condition nor failure conditions are met. 
+    #      i.e current price in the range of (low1_price, high1_price)
     unique_waves_success = {}
     unique_waves_failure = {}
     for lows, (low1_index, low1_price, high1_index, high1_price, low2_index, low2_price) in unique_pairs_local_lows_within_fib_levels.items():
         cur_max = 0
         cur_min = float('inf')
         high2_exceeded_high1_before = False
+        
+        immediate_candle_after_low2 = df.iloc[low2_index + 1]
+        if immediate_candle_after_low2['high'] > high1_price:
+            continue
+        
         for i, row in df.iloc[low2_index+2:].iterrows():    # 'low2_index+2' to avoid look-ahead bias
             cur_high = row['high']
             cur_low = row['low']
@@ -248,6 +258,27 @@ def search_high2(df, unique_pairs_local_lows_within_fib_levels, high2_retracemen
             if debugging:
                 print(f"row : {i} / {lows} is being processed / {(low1_index, low1_price, high1_index, high1_price, low2_index, low2_price)} / cur_max:{cur_max} / cur_min:{cur_min} / cur_high:{cur_high} / cur_low:{cur_low}")
             
+            # Failure case
+            if cur_min <= low1_price and not high2_exceeded_high1_before:   # if high2 exceeded high1 already, it is not a failure case
+                point_falls_below_low1_index, point_falls_below_low1_price = i, cur_low
+                # when current candle falls below at low2_index + 2
+                if i == low2_index + 2:
+                    if debugging:
+                        print(f"\tcur min {cur_min} falls below low1_price {low1_price}, Find between (low2_index+2: {low2_index+2}, current row: {i})")
+                    high2_index = i
+                    high2_price = df.loc[i]['open'] # set high2_price at current open price, conservatively.
+                    unique_waves_failure[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_low1_index, point_falls_below_low1_price]]
+                # when current candle falls below after low2_index + 2
+                else:
+                    if debugging:
+                        print(f"\tcur min {cur_min} falls below low1_price {low1_price}, Find high2 between (low2_index+2: {low2_index+2}, current row - 1: {i-1})")
+                    high2_index = df.loc[low2_index+2 : i-1,'high'].idxmax()
+                    high2_price = df.loc[low2_index+2 : i-1,'high'].max()
+                    unique_waves_failure[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_low1_index, point_falls_below_low1_price]]
+                if debugging:
+                    print("\tAppended to failure_waves")
+                break
+
             # Success case
             if cur_max > high1_price:
                 if debugging:
@@ -257,68 +288,88 @@ def search_high2(df, unique_pairs_local_lows_within_fib_levels, high2_retracemen
                     point_falls_below_retracement_ratio_index, point_falls_below_retracement_ratio_price = i, cur_low
                     if debugging:
                         print(f"\tAfter cur_max {cur_max} exceeded high1_price of {high1_price}, since it is the last row of the file -> appended to success_waves")
-                    if not df.loc[low2_index+2 : i-1,'high'].empty:
-                        high2_index = df.loc[low2_index+2 : i-1,'high'].idxmax()
-                        high2_price = df.loc[low2_index+2 : i-1,'high'].max()
-                        unique_waves_success[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_retracement_ratio_index, point_falls_below_retracement_ratio_price]]
+                    high2_index = df.loc[low2_index+2 : i,'high'].idxmax()
+                    high2_price = df.loc[low2_index+2 : i,'high'].max()
+                    unique_waves_success[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_retracement_ratio_index, point_falls_below_retracement_ratio_price]]
                     break
+                # If high2 didn't exceed high1 before, go to the next candle
                 if not high2_exceeded_high1_before:
                     high2_exceeded_high1_before = True
                     if debugging:
                         print(f"\tGo to next row")
                     continue
+
                 # Find the point where high1 retraces equal to or more than Fibonacci retracement ratio
+                # high2_retracement_ratio indicates retracement amount.
+                # For example, if max is 2000, bottom is 1800, and high2_retracement_ratio is 0.382, 
+                # it calculates to 2000 - ((2000 - 1800) * 0.382) = 1923.6.
                 fib_level = cur_max - ((cur_max - low2_price) * high2_retracement_ratio)
+                
                 if debugging:
                     print(f"\tfib_level of {high2_retracement_ratio}: {fib_level}")
                 if cur_low <= fib_level:
                     if debugging:
                         print(f"\tcur_low {cur_low} is less than fib_level of {fib_level} -> appended to success_waves")
                     point_falls_below_retracement_ratio_index, point_falls_below_retracement_ratio_price = i, cur_low
-                    if not df.loc[low2_index+2 : i-1,'high'].empty:
-                        high2_index = df.loc[low2_index+2 : i-1,'high'].idxmax()
-                        high2_price = df.loc[low2_index+2 : i-1,'high'].max()
-                        unique_waves_success[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_retracement_ratio_index, point_falls_below_retracement_ratio_price]]
+                    high2_index = df.loc[low2_index+2 : i-1,'high'].idxmax()
+                    high2_price = df.loc[low2_index+2 : i-1,'high'].max()
+                    unique_waves_success[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_retracement_ratio_index, point_falls_below_retracement_ratio_price]]
                     break
                 if debugging:
                     print(f"\tcur_low {cur_low} is still higher than fib_level of {fib_level}")
                 continue
-                
-            # Failure case
-            if cur_min <= low1_price:
-                if debugging:
-                    print(f"\tcur min {cur_min} falls below low1_price {low1_price}, Find between (low2_index+1: {low2_index+1}, current row-1: {i-1})")
-                point_falls_below_low1_index, point_falls_below_low1_price = i, cur_low
-                
-                if not df.loc[low2_index+2 : i-1,'high'].empty:
-                    if debugging:
-                        print("Appended to failure_waves")
-                    high2_index = df.loc[low2_index+2 : i-1,'high'].idxmax()
-                    high2_price = df.loc[low2_index+2 : i-1,'high'].max()
-                    unique_waves_failure[lows] = [[low1_index, low1_price], [high1_index, high1_price], [low2_index, low2_price], [high2_index, high2_price], [point_falls_below_low1_index, point_falls_below_low1_price]]
-                break
     
-    uncounted_waves = {k:v for k,v in unique_pairs_local_lows_within_fib_levels.items() if k not in {**unique_waves_success, **unique_waves_failure}}
+    uncounted_waves = {}
+    for k,v in unique_pairs_local_lows_within_fib_levels.items():
+        if k not in {**unique_waves_success, **unique_waves_failure}:
+            low1, low2 = k.split(';')
+            low1 = df.loc[int(low1.split(',')[0])]['date']
+            low2 = df.loc[int(low2.split(',')[0])]['date']
+            uncounted_waves[k] = f"{low1} ; {low2}"
     print(f"search_high2: Out of {len(unique_pairs_local_lows_within_fib_levels)} wave candidates, there were {len(unique_waves_success)} success waves, {len(unique_waves_failure)} failure waves, {len(uncounted_waves)} uncounted waves.")
-    print(f"Uncounted waves: {uncounted_waves}")
-    
     return unique_waves_success, unique_waves_failure
 
 def save_combined_waves_df(df, combined_waves, filename, save_df=False):
-    # Combine success and failure waves, Save to DataFrame optionally
+    # Save the result to a DataFrame
+    
+    # The parameter combined_waves should be constructed from the return values of the search_high2() function.
+    # The search_high2() function returns two dictionaries: unique_waves_success and unique_waves_failure.
+    # The combined_waves variable can be created by merging these two dictionaries like this:
+    # combined_waves = {**unique_waves_success, **unique_waves_failure}
+    # Alternatively, combined_waves can be set to either unique_waves_success or unique_waves_failure individually.
     combined_lows = {}
     for lows, points in combined_waves.items():
-        date = str(df.iloc[points[0][0]]['date']) + '; ' + str(df.iloc[points[2][0]]['date']) + '; ' + str(df.iloc[points[4][0]]['date'])
         low1_index, low1_price = points[0]
         high1_index, high1_price = points[1]
         low2_index, low2_price = points[2]
         high2_index, high2_price = points[3]
         retracement_index, retracement_price = points[4]
+        date = str(df.iloc[low1_index]['date']) + '; '\
+                + str(df.iloc[high1_index]['date']) + '; '\
+                + str(df.iloc[low2_index]['date']) + '; '\
+                + str(df.iloc[high2_index]['date']) + '; '\
+                + str(df.iloc[retracement_index]['date'])
+        
+        # Hypothesis testing
         diff = float(high2_price - high1_price)
-        combined_lows[lows] = [date, high1_price, high2_price, diff]
+        
+        # Strategy 1
+        s1_entry = float(df.iloc[low2_index + 2]['open'])
+        s1_profit = retracement_price - s1_entry
+        s1_loss = low1_price - s1_entry
+
+        combined_lows[lows] = [ date, low1_price, high1_price, low2_price, high2_price, retracement_price, diff, \
+                                s1_entry, s1_profit, s1_loss
+        ]
 
     # Convert the dictionary to a DataFrame
-    result_df = pd.DataFrame.from_dict(combined_lows, orient='index', columns=['dates', 'wave1_max', 'wave3_max', 'wave3_max - wave1_max'])
+    result_df = pd.DataFrame.from_dict(
+        combined_lows, 
+        orient='index',  
+        columns=['dates(low1; high1; low2; high2; threshold_hit)', 'low1', 'high1', 'low2', 'high2', 'threshold', 'wave3_max - wave1_max', \
+                 's1_entry', 's1_profit', 's1_loss'
+        ]
+    )
     
     # Save to CSV if requested
     if save_df:
@@ -473,7 +524,7 @@ def run(filename, retracement_ratio=0.618, high2_retracement_ratio=0.382, reset_
     # Waves Detection
     waves = store_unique_pairs_local_lows(df)
     waves = store_unique_pairs_local_lows_within_fib_levels(waves, retracement_ratio)
-    success_waves, failure_waves = search_high2(df, waves, high2_retracement_ratio)
+    success_waves, failure_waves = search_high2(df, waves, high2_retracement_ratio, debugging=False)
     combined_waves = {**success_waves, **failure_waves}
     
     # Save Results to files
