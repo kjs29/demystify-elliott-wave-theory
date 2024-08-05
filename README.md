@@ -2,6 +2,27 @@
 
 A Statistical Analysis of Elliott Wave Theory
 
+- [Introduction](#introduction)
+
+- [Purpose & Objective](#purpose)
+
+- [Methodology](#methodology)
+
+  - [Hypotheses](#hypotheses)
+  
+  - [Data Collection](#data-collection)
+ 
+  - [Data Preparation and Analysis](#data-preparation-and-analysis)
+
+- [Statistical Tests](#statistical-tests)
+
+- [Result](#result)
+
+- [Visualization](#visualization)
+
+- [Conclusion & Discussions](#conclusion--discussions)
+
+
 # Introduction
 
 Elliott Wave Theory was developed by Ralph Nelson Elliott in the 1930s. He believed that stock markets traded in repetitive patterns. He proposed that these patterns and price trends resulted from investor psychology. He argued that crowd psychology, where the consensus swings between optimism and pessimism, causes recurring fractal patterns in price movements.
