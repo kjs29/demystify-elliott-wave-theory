@@ -68,7 +68,7 @@ def save_boxplot(data, filename, labels=['Wave1 Max', 'Wave3 Max'], title='Box P
     # plt.show()
     plt.savefig(filename)
 
-def test_strategy_1(filepath):
+def prepare_strategy_1_data(filepath):
     # Success: Selling at wave3's Fibonacci retracement level after high2 exceeds high1
     # Failure: Selling at low1 if high2 is less than or equal to high1.
     # Returns a tuple containing success and failure values.
@@ -137,7 +137,7 @@ def process_data(filename,
             total_failure_waves += len(failure_waves)
 
             # Aggregate individual data from each sample for strategy 1 test
-            success_value, failure_value = test_strategy_1(sample_filepath)
+            success_value, failure_value = prepare_strategy_1_data(sample_filepath)
             combined_success_value.extend(success_value)
             combined_failure_value.extend(failure_value)
 
@@ -161,7 +161,7 @@ def process_data(filename,
         save_boxplot([wave1_max, wave3_max], os.path.join(output_folder, 'Wave1_Max_and_Wave3_Max_Boxplot.jpg'))
         
         # Strategy 1
-        success_value, failure_value = test_strategy_1(sample_filepath)
+        success_value, failure_value = prepare_strategy_1_data(sample_filepath)
         print_strategy_1_result(success_value, failure_value)
 
 filename = "btc_historical.csv"
