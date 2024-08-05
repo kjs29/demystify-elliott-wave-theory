@@ -237,7 +237,6 @@ Exit:
   
   - Failure: Sell at low1 if high2 is less than or equal to high1.
 
-
 ### Plotting the Chart
 
 - **Chart Plotting:** The chart is plotted with detected waves on candlestick chart. Waves where its high2 is greater than high1 are plotted with a solid line, and other waves are plotted with dotted-line. Different markers are used to visualize waves effectively. Modules used for charting are `mplfinance`, and `matplotlib.pyplot`.
@@ -388,31 +387,31 @@ Waves are detected based on the parameters used.
   ```
 
   Project focuses more on wave patterns identified by neighboring local lows. [3](#why_neighboring_lows)
-  
 
 ### Samples from Red Blocks
-<img src="https://github.com/user-attachments/assets/2008ebc2-d0cf-4477-a961-5b138b8c7d40" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/531cb94f-60ff-40b2-82c8-5b193a07748c" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/1ba0010f-5d28-4433-b7aa-bda9baa8338b" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/22955eff-b7bf-44b0-98f0-853abb8990ce" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/4aa2bfb5-4c29-4dc3-a2b6-46039bf76bc9" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/9e8e99aa-2ec6-4493-aff3-e16273063a5b" alt="image" width="700" height="500"/>
 
-### Samples from Green Blocks
-<img src="https://github.com/user-attachments/assets/752d431e-b7ce-467a-9248-8c32f7cc00d1" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/a1222f98-bc0c-4029-9be2-49df10aab0f8" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/56678f95-1f71-4d60-a6eb-6a1003f4be66" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/cefd874a-d62e-4731-88de-5a0e5575e568" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/ed345021-019f-4684-b8a6-14489503f5b3" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/a288541c-8a85-417f-a4c9-a9775a8beb5d" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/a61157ee-06c2-441a-89f9-77f2fc32c5bb" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/ecc03ea9-9334-4431-9ab7-ae12773912ea" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/691c8c6e-ab99-47f7-b8c2-2e6fbfe88d30" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/9256fd64-b020-4b45-b934-20e6a7ca4c32" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/8f47bb79-3781-45b0-bc3b-2b1cae716c73" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/f337f5da-9082-41ec-b601-f19d91ec5faf" alt="image" width="650" height="500"/>
 
 ### Samples from Sideways Blocks
-<img src="https://github.com/user-attachments/assets/c3cce8f5-514a-495d-b666-77450d4d07e9" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/894a4118-1c20-405a-b64c-27fe511822c5" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/b9d56e14-fa15-4ac2-b85c-d55707def2a0" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/e6d8f8c3-cee6-4b33-b9d8-ad7d92f46813" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/45af0006-8180-4439-b448-eee93c75896f" alt="image" width="700" height="500"/>
-<img src="https://github.com/user-attachments/assets/334ad606-bcb9-43ef-bfcd-136e4ef10d28" alt="image" width="700" height="500"/>
+<img src="https://github.com/user-attachments/assets/a741ab97-7181-482f-85ae-324e4a0772ae" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/dec6cfe6-13f4-463a-b081-001fd7433d75" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/81284b3c-4454-4dd2-b8ac-ebe073e01aab" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/abc5dfb3-cae5-43b8-999f-0032d20b78fd" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/0c286755-4ba6-46cc-b528-451abe7c5258" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/7e21a3b5-61e9-4666-8b1d-9f0e75efbd4f" alt="image" width="650" height="500"/>
+
+### Samples from Green Blocks
+<img src="https://github.com/user-attachments/assets/6b23a626-8f97-48ad-ab9f-8112be95b09c" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/1ee3fd4f-672b-4bff-aa5d-91d4d1e7fd31" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/5fe38957-077f-43d5-8357-888b1b6bf41c" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/2cacb915-267f-4130-a220-d8d8ee8a7540" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/428d3e77-e243-4635-95cb-4d7608448614" alt="image" width="650" height="500"/>
+<img src="https://github.com/user-attachments/assets/2b3bf62b-ee6d-4284-9824-3853a4a907fc" alt="image" width="650" height="500"/>
 
 ## Screenshot
 
@@ -420,13 +419,21 @@ Waves are detected based on the parameters used.
 
 # Conclusion & Discussions
 
-The statistical test conducted in this project did not provide strong evidence to reject the null hypothesis. The p-value obtained from the paired sample t-test was 0.12369275505181164, which is greater than the standard significance level of 0.05. This result means that we fail to reject the null hypothesis, indicating that the data does not provide sufficient evidence to conclude that wave 3 consistently reaches higher prices than wave 1 after an uptrend and its subsequent corrective wave falling within a Fibonacci retracement range. It can be interpreted as that there is approximately 12% probability that the observed differences (where wave 3 exceeds wave 1) could be due to random chances, assuming the null hypothesis is true. This is not low enough to conclude that there is a significant pattern where wave 3 consistently exceeds wave 1. 
+The statistical test conducted in this project did not provide strong evidence to reject the null hypothesis. The p-value obtained from the paired sample t-test was 0.20165287546619798, which is greater than the standard significance level of 0.05. This result means that we fail to reject the null hypothesis, indicating that the data does not provide sufficient evidence to conclude that wave 3 consistently reaches higher prices than wave 1 after an uptrend and its subsequent corrective wave falling within a Fibonacci retracement range. It can be interpreted that there is approximately 20% probability that the observed differences (where wave 3 exceeds wave 1) could be due to random chances, assuming the null hypothesis is true. This is not low enough to conclude that there is a significant pattern where wave 3 consistently exceeds wave 1. 
 
-While there is no sufficient evidence of wave 3 exceeding wave 1, the analysis shows that the probability of wave 3 exceeding wave 1 is still higher than 50%. This suggests that there may be a practical implication in trading. The higher probability of wave 3 exceeding wave 1 indicates that there might be underlying tendency in the market that can be exploited for trading strategies.
+Along with the result from hypothesis test, the expected value from the trading strategy was approximately -31.8235. This means, on average, I can expect to lose 31.8235 dollars every trade. It seems my trading strategy is more charitable than I intended. I would like to mention that this strategy's entry point is open price of the candle that is two candles after low2. Observing that there have been cases where candles at low2+1 already exceeded high1, I am speculating that better results may be derived if we implement faster ways to detect low2. Similarly, delaying an entry point by waiting until entry point goes near low2 price could show fewer but better results.
 
-Further research could involve 
+Other further researches could involve
 
-- Exploring different timeframes, market conditions, and Fibonacci retracement levels to further investigate the observed patterns
+- Exploring different timeframes, market conditions, and Fibonacci retracement levels to investigate the observed patterns
+
+  - Would 1 minute timeframe show more consistently observed wave patterns?
+ 
+  - Does the price movement in the last 20 minutes have more association to the next 1 hour candle than the first and second 20 minutes?
+ 
+  - Would there be any association between the number of recent successful wave patterns and the upcoming market condition?
+ 
+  - Are there any observed patterns around Fibonacci retracement levels?
 
 - Testing the hypothesis with different statistical inference methods or technologies such as machine learning
 
@@ -444,11 +451,11 @@ In hypothesis testing, the assumptions I make should be aligned with the specifi
 
 More research can be done regarding this such as, in a 5 minute timeframe chart, test the association between the current 1 hour timeframe candle's low and other 5 minute timeframe variables.
 
-If we were to investigate 1 hour candle's low's behavior, would the current candle's low occur more in the first 30 minutes or the second 30 minutes? Does the timing of formation of low associate with any particular variable? What are confounding factors in any seemingly meaningful observations?
+If we were to investigate 1 hour candle's low behavior, would the current candle's low occur more in the first 30 minutes or the second 30 minutes? Does the timing of formation of low associate with any particular variable? What are confounding factors in any seemingly meaningful observations?
 
 <a name="why_neighboring_lows">3.</a>
 
-The choice to capture waves identified by neighboring lows was based on the desire to accurately test motive waves in Elliott Waves Theory. According to the book, motive waves are formed by neighboring lows, rather than non-adjacent ones. Including non-adjacent lows in wave detection could lead to miscounting previous waves, thus deviating from the hypothesis (Does the subsequent wave after low 2 exceed the high of wave 1?). In the real world, however, more complexities are added, so it will be insightful to investigate all the possible waves. This can be achieved by considering combination, choosing 2 out of total number of local lows, since order does not matter and numbers are naturally sorted in any pairs of two.
+The choice to capture waves identified by neighboring lows was based on the desire to accurately test motive waves in Elliott Waves Theory. According to the book, motive waves are formed by neighboring lows, rather than non-adjacent ones. Including non-adjacent lows in wave detection could lead to miscounting previous waves, thus deviating from the hypothesis (Does the subsequent wave after low 2 exceed the high of wave 1?). In the real world, however, more complexities are added, so it will be insightful to investigate all the possible waves. This can be achieved by considering combinations, choosing 2 out of total number of local lows, since order does not matter and numbers are naturally sorted in any pairs of two.
 
 
 ## References
