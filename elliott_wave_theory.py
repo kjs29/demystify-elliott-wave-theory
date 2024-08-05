@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 from scipy.signal import find_peaks
+from scipy.stats import pearsonr
 
 def load_file(filename):
     df = pd.read_csv(filename)
@@ -468,40 +469,44 @@ def block_sampling(filename, number_of_splits=30):
         
         return df_list
     
-    def count_green_ratio(df):
-        # Determine the ratio of green rows out of total rows
-        green = (df['green_red'] == 'green').sum()
-        total = len(df)
-        
-        return green / total
-    
+    def calculate_correlation_coefficient(df):
+        # Calculate Pearson's R between time and close
+        if 'close' in df.columns:
+            x = list(df.index.values)
+            y = df['close']
+            return pearsonr(x, y)[0]
+        else:
+            return 0
+
     df = load_file(filename)
     new_dfs = split_dataframe(df, number_of_splits) # List of DataFrame
-    green_ratios = {}
+    
+    correlation_coefficient = {}
     for i in range(1, number_of_splits + 1):
         new_df = new_dfs[i-1]
-        new_df = add_green_red(new_df)
-        new_df_green_ratio = count_green_ratio(new_df)
-        green_ratios[i] = [i, round(new_df_green_ratio, 4)]
+        r_value = calculate_correlation_coefficient(new_df)
+        correlation_coefficient[i] = [i, round(r_value, 4)]
+        # Save each splitted dataframe as csv
         splitted_filename = f"{filename.split('.')[0]}_{i}_splitted.csv"
         save_to_csv(new_dfs[i-1], splitted_filename, False)
 
-    green_ratios = sorted(green_ratios.values(), key=lambda x:x[1])
-    
+    samples_sorted_by_r = sorted(correlation_coefficient.values(), key=lambda x: x[1])
+    print(f"Samples sorted by correlation coefficient: {samples_sorted_by_r}")
+
     # Stratified Random Sampling
-    divisor = len(green_ratios) // 3
-    red = random.sample(green_ratios[:divisor], max(1, divisor//2))
-    green = random.sample(green_ratios[-divisor:], max(1, divisor//2))
-    sideways = random.sample(green_ratios[divisor:-divisor], max(1, divisor//2))
+    divisor = len(samples_sorted_by_r) // 3
+    red = random.sample(samples_sorted_by_r[:divisor], max(1, divisor//2))
+    green = random.sample(samples_sorted_by_r[-divisor:], max(1, divisor//2))
+    sideways = random.sample(samples_sorted_by_r[divisor:-divisor], max(1, divisor//2))
 
     print(f"\nYou have requested to split your main file into {number_of_splits} blocks of files.")
     print(f"\nStratified Sampling done. Each block is categorized by the number of green candles / number of candles within each block.")
-    print(f"\nTotal Blocks: {green_ratios}\n")
+    print(f"\nTotal Blocks: {samples_sorted_by_r}\n")
     print(f"Random Sampling is completed. We will process the following blocks, and get aggregated results.")
     print(f"Red: {red}")
-    print(f"Green: {green}")
-    print(f"Sideways: {sideways}\n")
-    filenumbers = [x for x, y in red] + [x for x, y in green] + [x for x, y in sideways]
+    print(f"Sideways: {sideways}")
+    print(f"Green: {green}\n")
+    filenumbers = [x for x, y in red] + [x for x, y in sideways] + [x for x, y in green]
     
     return filenumbers
 
