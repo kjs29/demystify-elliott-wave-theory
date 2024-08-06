@@ -373,26 +373,26 @@ reset_threshold=1000000
 
 ## Chart
 
-For each wave, five points (low1, high1, low2, high2, threshold price) are plotted since 6th point is irrelevant.
+- For each wave, five points (low1, high1, low2, high2, threshold price) are plotted since 6th point is irrelevant.
 
-Threshold price refers to the price that falls below retracement price in success case, and current low price in failure case.
+  - Threshold price refers to the price that falls below retracement price in success case, and current low price in failure case.
 
-If a wave's high2 point exceeds high1 point (success case), it is drawn by a solid line; otherwise a dotted-line.
+- If a wave's high2 point exceeds high1 point (success case), it is drawn by a solid line; otherwise a dotted-line.
 
-Waves are detected based on the parameters used.
+- Waves are detected based on the parameters used.
 
-- If `retracement_ratio=0.618`, low2 would not be detected if wave2 retraced less than 0.618 of the wave1.
+  - If `retracement_ratio=0.618`, low2 would not be detected if wave2 retraced less than 0.618 of the wave1.
 
-- If `high2_retracement_ratio=0.382`, wave3 will keep searching for the highest point until current candle retraces equal to or more than 0.382 of wave3.
+  - If `high2_retracement_ratio=0.382`, wave3 will keep searching for the highest point until current candle retraces equal to or more than 0.382 of wave3.
 
 - If there is another trough between the troughs within a wave, they are not counted.
 
   <img src="https://github.com/user-attachments/assets/457d6ee1-6be6-4525-80e0-60e22c9d6d9a" alt="image" width="300" height="200"/>Counted(blue)<img src="https://github.com/user-attachments/assets/63904ae1-78ec-4e4f-a633-d0fbed22d3ac" alt="image" width="300" height="200"/>Not counted(red)
 
   ```
-  Above image has 5 troughs, 1,2,3,4, and 5.
+  Above image has 5 local lows with indices 1,2,3,4, and 5.
 
-  At trough 4,
+  At index 4,
   
     local_lows = [1,2,3,4] # increasing order
 
@@ -400,11 +400,11 @@ Waves are detected based on the parameters used.
 
     The Wave Detection Algorithm does not identify waves: [1,3], [1,4], [2,4].
 
-  At trough 5,
-
-    local_lows = [1,5] # since 5 is lower than 2, 3, 4
-
-    Identified waves: [1,2]
+  At index 5,
+    
+    local_lows = [1,5] # low at index 5 is lower than lows at index 2, 3, or 4 -> remove them from the list
+  
+    Identified waves: [1,5]
   ```
 
   Project focuses more on wave patterns identified by neighboring local lows. [3](#why_neighboring_lows)
@@ -488,7 +488,7 @@ If we were to investigate 1 hour candle's low behavior, would the current candle
 
 <a name="why_neighboring_lows">3.</a>
 
-The choice to capture waves identified by neighboring lows was based on the desire to accurately test motive waves in Elliott Waves Theory. According to the book, motive waves are formed by neighboring lows, rather than non-adjacent ones. Including non-adjacent lows in wave detection could lead to miscounting previous waves, thus deviating from the hypothesis (Does the subsequent wave after low 2 exceed the high of wave 1?). In the real world, however, more complexities are added, so it will be insightful to investigate all the possible waves. This can be achieved by considering combinations, choosing 2 out of total number of local lows, since order does not matter and numbers are naturally sorted in any pairs of two.
+The choice to capture waves identified by neighboring lows was based on the desire to accurately test motive waves in Elliott Waves Theory. My hypothesis is specifically about the movement after a motive wave and its retracement. By ensuring that each wave is formed by consecutive movements, I can more accurately test the hypothesis about wave 3 exceeding wave 1 after a retracement. Whether we should include non-adjacent lows for the wave counting or not depends on how we identify corrective waves. I do believe that different possibilities to identify corrective waves contribute to confusion and subjectivity. Since this project does not cover corrective wave identification, I decided that including non-adjacent lows could introduce additional variability and noise into the data, making it harder to detect significant patterns or trends. Focusing on adjacent lows helps maintain a cleaner dataset for the hypothesis.
 
 
 ## References
