@@ -123,9 +123,9 @@ To clarify the retracement percentages, if the first wave starts at 0 and reache
 
   1. The entire data set is divided into 40 time blocks.
   
-  2. Calculate the number of rows with green candles versus the number of entire rows within each block. The segments are categorized into green, red, and sideways market conditions.
+  2. Calculate the correlation coefficient between price and time within each block just to measure the strength of the trend. Then the blocks are categorized into three different market conditions: red, sideways, and green.
   
-  3. Using the random Python module, the samples are drawn from each category to ensure a balanced representation of different market conditions.
+  3. Using Python's random module, samples are drawn from each category to ensure a balanced representation of different market conditions.
 
 ## Data Preparation and Analysis
 
