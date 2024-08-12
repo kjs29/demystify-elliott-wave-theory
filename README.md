@@ -214,7 +214,7 @@ This algorithm ensures that it captures significant price movements after low2, 
 
 - The wave detection algorithm identifies waves using pairs of two unique, increasing local low values.
 
-  When using local low values, it calls for the next candle to low price that is higher than the current local lows. 
+  When using local low values, it calls for the next candle's low price to be higher than the current local lows. 
 
   Whether the next candle's low is higher than current candle's low or not cannot be determined until the next candle is completed. [2](#why_low2_plus_2)
 
