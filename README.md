@@ -505,6 +505,21 @@ reset_threshold=1000000
   <img src="https://github.com/user-attachments/assets/0e597e98-b43d-4ba9-b94f-ebad8470aad3" alt="image" width="250" height="200"/>
 </div></br>
 
+### When testing strategy on entire population...
+
+![profit_and_loss_cumulative_strategy1](https://github.com/user-attachments/assets/81438afe-66d8-4623-9bdb-bca090b4a457)
+
+![profit_and_loss_strategy1](https://github.com/user-attachments/assets/aa9ad888-1701-4a4c-b41c-68d4760e606f)
+
+![rsi_entry_failed](https://github.com/user-attachments/assets/2776de71-74a9-458b-9fb5-f5cd729690c2)
+
+![rsi_entry_success](https://github.com/user-attachments/assets/f96c7c98-42f8-44e1-a06d-e5b3eddb0789)
+
+![duration_of_failed_trades_cumulative](https://github.com/user-attachments/assets/31d91264-b2cb-4876-994f-6772610dc29d)
+
+![duration_of_successful_trades_cumulative](https://github.com/user-attachments/assets/977e73c8-4bca-4fdd-8bb3-a0c3345c95da)
+
+![success_trades_day_histogram](https://github.com/user-attachments/assets/6c091c66-139e-4802-9f02-cfb1ba17efb9)
 
 ## Screenshot
 
