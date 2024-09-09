@@ -254,9 +254,30 @@ Entry: Buy at the open price of the candle that is two candles after low2.
 
 Exit:
 
-  - Success: Sell at the retracement price.
+  - Failure:
+
+    - Condition: If high2 is lower than high1 and the current price falls below low1
+    
+    - Exit price: The current candle's low price.
   
-  - Failure: Sell at low1 if high2 is less than or equal to high1.
+  - Success:
+  
+    - Condition: If the current price is higher than high1 and the current price is equal to or lower than the fibonacci retracement level.
+
+      - fibonacci retracement level is calculated the same way as previous previous `Fibonacci retracement level` used to determine low2, except:
+
+        high1 is replaced with current maximum price,
+
+        low1 is replaced with low2, and
+
+        retracement_ratio is replaced with `high2_retracement_ratio`.
+
+        ```
+        fib_level = cur_max - ((cur_max - low2_price) * high2_retracement_ratio)
+        ```
+  
+    - Exit price: The retracement price.
+  
 
 ### Plotting the Chart
 
